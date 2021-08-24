@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Which is a bargain</string>
+    <string name="item_A">ITEM A</string>
+    <string name="item_B">ITEM B</string>
+    <string name="ttl_amount"> amount(exp. g,m,ml)</string>
+    <string name="ttl_quantity"> quantity(exp. pieces)</string>
+    <string name="ttl_price"> price</string>
+    <string name="ttl_point"> point</string>
+    <string name="ttl_point_2">(In case of 10 point, input "10")</string>
+    <string name="ttl_dis_rate">discount rate</string>
+    <string name="ttl_dis_amount">discount amount</string>
+    <string name="btn_cal">CAL.</string>
+    <string name="btn_detail">DETAIL</string>
+    <string name="btn_reset">RESET</string>
+    <string name="ttl_rbtn_tax0">TaxFree</string>
+    <string name="ttl_rbtn_tax8">8%</string>
+    <string name="ttl_rbtn_tax10">10%</string>
+
+</resources>

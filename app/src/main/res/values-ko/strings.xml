@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">어느 쪽이 거래</string>
+    <string name="item_A">　상품 A</string>
+    <string name="item_B">　상품 B</string>
+    <string name="ttl_amount">　용량 (예 :g,cm,㎖)</string>
+    <string name="ttl_quantity">　수량</string>
+    <string name="ttl_price">　가격</string>
+    <string name="ttl_point">　포인트</string>
+    <string name="ttl_point_2">(10 점의 경우 [10]를 입력)</string>
+    <string name="ttl_dis_rate">할인율 (%)</string>
+    <string name="ttl_dis_amount">할인 금액</string>
+    <string name="btn_cal">계산</string>
+    <string name="btn_detail">자세한</string>
+    <string name="btn_reset">재설정</string>
+    <string name="ttl_rbtn_tax0">TaxFree</string>
+    <string name="ttl_rbtn_tax8">8%</string>
+    <string name="ttl_rbtn_tax10">10%</string>
+</resources>

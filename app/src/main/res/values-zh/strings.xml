@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">哪些交易</string>
+    <string name="item_A">　產品A</string>
+    <string name="item_B">　產品B</string>
+    <string name="ttl_amount">　容量(例如：g,cm,㎖)</string>
+    <string name="ttl_quantity">　數量</string>
+    <string name="ttl_price">　價格</string>
+    <string name="ttl_point">　點</string>
+    <string name="ttl_point_2">（輸入[10] 10分）</string>
+    <string name="ttl_dis_rate">折扣率(％)</string>
+    <string name="ttl_dis_amount">折扣金額</string>
+    <string name="btn_cal">計算</string>
+    <string name="btn_detail">更多細節</string>
+    <string name="btn_reset">重置</string>
+    <string name="ttl_rbtn_tax0">TaxFree</string>
+    <string name="ttl_rbtn_tax8">8%</string>
+    <string name="ttl_rbtn_tax10">10%</string>
+</resources>
