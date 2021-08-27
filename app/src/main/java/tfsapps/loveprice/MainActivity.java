@@ -1,3 +1,4 @@
+
 package tfsapps.loveprice;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -47,6 +49,18 @@ public class MainActivity extends AppCompatActivity {
     private EditText inp_point_B;
     private EditText inp_chk_temp;
 
+    private RadioButton rbtn_tax0_A;
+    private RadioButton rbtn_tax8_A;
+    private RadioButton rbtn_tax10_A;
+    private RadioButton rbtn_tax0_B;
+    private RadioButton rbtn_tax8_B;
+    private RadioButton rbtn_tax10_B;
+
+    private RadioButton rbtn_dis_per_A;
+    private RadioButton rbtn_dis_pri_A;
+    private RadioButton rbtn_dis_per_B;
+    private RadioButton rbtn_dis_pri_B;
+
     private double unit_A = 0;
     private double unit_B = 0;
     private int point_pri_A = 0;
@@ -77,25 +91,89 @@ public class MainActivity extends AppCompatActivity {
 
         inp_amount_A = (EditText) findViewById(R.id.inp_amount_A);
         inp_amount_A.addTextChangedListener(new TextWatcherExtend(R.id.inp_amount_A, 5));
+        inp_amount_A.setBackgroundTintList(null);
+        inp_amount_A.setTextColor(Color.BLACK);
+
         inp_set_A = (EditText) findViewById(R.id.inp_set_A);
         inp_set_A.addTextChangedListener(new TextWatcherExtend(R.id.inp_set_A, 4));
+        inp_set_A.setBackgroundTintList(null);
+        inp_set_A.setTextColor(Color.BLACK);
+
         inp_pri_A = (EditText) findViewById(R.id.inp_pri_A);
         inp_pri_A.addTextChangedListener(new TextWatcherExtend(R.id.inp_pri_A, 6));
+        inp_pri_A.setBackgroundTintList(null);
+        inp_pri_A.setTextColor(Color.BLACK);
+
         inp_point_A = (EditText) findViewById(R.id.inp_point_A);
         inp_point_A.addTextChangedListener(new TextWatcherExtend(R.id.inp_point_A, 4));
+        inp_point_A.setBackgroundTintList(null);
+        inp_point_A.setTextColor(Color.BLACK);
+
         inp_discount_A = (EditText) findViewById(R.id.inp_discount_A);
         inp_discount_A.addTextChangedListener(new TextWatcherExtend(R.id.inp_discount_A, 6));
+        inp_discount_A.setBackgroundTintList(null);
+        inp_discount_A.setTextColor(Color.BLACK);
 
         inp_amount_B = (EditText) findViewById(R.id.inp_amount_B);
         inp_amount_B.addTextChangedListener(new TextWatcherExtend(R.id.inp_amount_B, 5));
+        inp_amount_B.setBackgroundTintList(null);
+        inp_amount_B.setTextColor(Color.BLACK);
+
         inp_set_B = (EditText) findViewById(R.id.inp_set_B);
         inp_set_B.addTextChangedListener(new TextWatcherExtend(R.id.inp_set_B, 4));
+        inp_set_B.setBackgroundTintList(null);
+        inp_set_B.setTextColor(Color.BLACK);
+
         inp_pri_B = (EditText) findViewById(R.id.inp_pri_B);
         inp_pri_B.addTextChangedListener(new TextWatcherExtend(R.id.inp_pri_B, 6));
+        inp_pri_B.setBackgroundTintList(null);
+        inp_pri_B.setTextColor(Color.BLACK);
+
         inp_point_B = (EditText) findViewById(R.id.inp_point_B);
         inp_point_B.addTextChangedListener(new TextWatcherExtend(R.id.inp_point_B, 4));
+        inp_point_B.setBackgroundTintList(null);
+        inp_point_B.setTextColor(Color.BLACK);
+
         inp_discount_B = (EditText) findViewById(R.id.inp_discount_B);
         inp_discount_B.addTextChangedListener(new TextWatcherExtend(R.id.inp_discount_B, 6));
+        inp_discount_B.setBackgroundTintList(null);
+        inp_discount_B.setTextColor(Color.BLACK);
+
+        rbtn_tax0_A = (RadioButton)findViewById((R.id.rbtn_tax0_A));
+        rbtn_tax0_A.setBackgroundTintList(null);
+        rbtn_tax0_A.setTextColor(Color.DKGRAY);
+        rbtn_tax8_A = (RadioButton)findViewById((R.id.rbtn_tax8_A));
+        rbtn_tax8_A.setBackgroundTintList(null);
+        rbtn_tax8_A.setTextColor(Color.DKGRAY);
+        rbtn_tax10_A = (RadioButton)findViewById((R.id.rbtn_tax10_A));
+        rbtn_tax10_A.setBackgroundTintList(null);
+        rbtn_tax10_A.setTextColor(Color.DKGRAY);
+
+        rbtn_tax0_B = (RadioButton)findViewById((R.id.rbtn_tax0_B));
+        rbtn_tax0_B.setBackgroundTintList(null);
+        rbtn_tax0_B.setTextColor(Color.DKGRAY);
+        rbtn_tax8_B = (RadioButton)findViewById((R.id.rbtn_tax8_B));
+        rbtn_tax8_B.setBackgroundTintList(null);
+        rbtn_tax8_B.setTextColor(Color.DKGRAY);
+        rbtn_tax10_B = (RadioButton)findViewById((R.id.rbtn_tax10_B));
+        rbtn_tax10_B.setBackgroundTintList(null);
+        rbtn_tax10_B.setTextColor(Color.DKGRAY);
+
+        rbtn_dis_per_A = (RadioButton)findViewById((R.id.rbtn_dis_per_A));
+        rbtn_dis_per_A.setBackgroundTintList(null);
+        rbtn_dis_per_A.setTextColor(Color.DKGRAY);
+
+        rbtn_dis_pri_A = (RadioButton)findViewById((R.id.rbtn_dis_pri_A));
+        rbtn_dis_pri_A.setBackgroundTintList(null);
+        rbtn_dis_pri_A.setTextColor(Color.DKGRAY);
+
+        rbtn_dis_per_B = (RadioButton)findViewById((R.id.rbtn_dis_per_B));
+        rbtn_dis_per_B.setBackgroundTintList(null);
+        rbtn_dis_per_B.setTextColor(Color.DKGRAY);
+
+        rbtn_dis_pri_B = (RadioButton)findViewById((R.id.rbtn_dis_pri_B));
+        rbtn_dis_pri_B.setBackgroundTintList(null);
+        rbtn_dis_pri_B.setTextColor(Color.DKGRAY);
 
         text_item_A = (TextView) findViewById(R.id.item_A);
         text_item_B = (TextView) findViewById(R.id.item_B);
