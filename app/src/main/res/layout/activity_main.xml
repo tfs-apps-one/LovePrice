@@ -37,7 +37,7 @@
             android:focusableInTouchMode="true"
             android:gravity="center"
             android:text="　status-1　"
-            android:textSize="17sp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/status2"
@@ -45,7 +45,7 @@
             android:layout_height="30dp"
             android:gravity="center"
             android:text="　status-2　"
-            android:textSize="17sp" />
+            android:textSize="17dp" />
 
     </LinearLayout>
 
@@ -74,7 +74,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="10"
                 android:text="@string/item_A"
-                android:textSize="18sp" />
+                android:textSize="18dp" />
 
 
             <RadioGroup
@@ -85,21 +85,30 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:orientation="horizontal">
-                <RadioButton android:id="@+id/rbtn_tax0_A"
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax0_A"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax0_A"
                     android:text="@string/ttl_rbtn_tax0"
-                    android:onClick="onRbtn_tax0_A"/>
-                <RadioButton android:id="@+id/rbtn_tax8_A"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax8_A"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax8_A"
                     android:text="@string/ttl_rbtn_tax8"
-                    android:onClick="onRbtn_tax8_A"/>
-                <RadioButton android:id="@+id/rbtn_tax10_A"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax10_A"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax10_A"
                     android:text="@string/ttl_rbtn_tax10"
-                    android:onClick="onRbtn_tax10_A"/>
+                    tools:ignore="TouchTargetSizeCheck" />
             </RadioGroup>
 
             <TextView
@@ -118,9 +127,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <TextView
                 android:id="@+id/ttl_set_A"
@@ -138,9 +148,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <TextView
                 android:id="@+id/ttl_pri_A"
@@ -158,9 +169,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <TextView
                 android:id="@+id/ttl_point_A"
@@ -180,7 +192,7 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:text="@string/ttl_point_2"
-                android:textSize="10sp" />
+                android:textSize="10dp" />
 
             <EditText
                 android:id="@+id/inp_point_A"
@@ -188,9 +200,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <RadioGroup
                 android:id="@+id/RadioGroupDiscount_A"
@@ -201,16 +214,22 @@
                 android:layout_marginStart="3dp"
                 android:background="@drawable/bak_ttl"
                 android:orientation="horizontal">
-                <RadioButton android:id="@+id/rbtn_dis_per_A"
+
+                <RadioButton
+                    android:id="@+id/rbtn_dis_per_A"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_discount_percent_A"
                     android:text="@string/ttl_dis_rate"
-                    android:onClick="onRbtn_discount_percent_A"/>
-                <RadioButton android:id="@+id/rbtn_dis_pri_A"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_dis_pri_A"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_discount_price_A"
                     android:text="@string/ttl_dis_amount"
-                    android:onClick="onRbtn_discount_price_A"/>
+                    tools:ignore="TouchTargetSizeCheck" />
             </RadioGroup>
 
             <EditText
@@ -219,9 +238,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
         </LinearLayout>
 
@@ -240,7 +260,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="10"
                 android:text="@string/item_B"
-                android:textSize="18sp" />
+                android:textSize="18dp" />
 
             <RadioGroup
                 android:id="@+id/RadioGroupTax_B"
@@ -250,21 +270,30 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:orientation="horizontal">
-                <RadioButton android:id="@+id/rbtn_tax0_B"
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax0_B"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax0_B"
                     android:text="@string/ttl_rbtn_tax0"
-                    android:onClick="onRbtn_tax0_B"/>
-                <RadioButton android:id="@+id/rbtn_tax8_B"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax8_B"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax8_B"
                     android:text="@string/ttl_rbtn_tax8"
-                    android:onClick="onRbtn_tax8_B"/>
-                <RadioButton android:id="@+id/rbtn_tax10_B"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_tax10_B"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_tax10_B"
                     android:text="@string/ttl_rbtn_tax10"
-                    android:onClick="onRbtn_tax10_B"/>
+                    tools:ignore="TouchTargetSizeCheck" />
             </RadioGroup>
 
             <TextView
@@ -283,9 +312,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <TextView
                 android:id="@+id/ttl_set_B"
@@ -303,9 +333,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <TextView
                 android:id="@+id/ttl_pri_B"
@@ -323,9 +354,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
             <TextView
                 android:id="@+id/ttl_point_B"
@@ -345,7 +377,7 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:text="@string/ttl_point_2"
-                android:textSize="10sp" />
+                android:textSize="10dp" />
 
             <EditText
                 android:id="@+id/inp_point_B"
@@ -353,9 +385,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <RadioGroup
                 android:id="@+id/RadioGroupDiscount_B"
@@ -366,16 +399,22 @@
                 android:layout_marginStart="3dp"
                 android:background="@drawable/bak_ttl"
                 android:orientation="horizontal">
-                <RadioButton android:id="@+id/rbtn_dis_per_B"
+
+                <RadioButton
+                    android:id="@+id/rbtn_dis_per_B"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_discount_percent_B"
                     android:text="@string/ttl_dis_rate"
-                    android:onClick="onRbtn_discount_percent_B"/>
-                <RadioButton android:id="@+id/rbtn_dis_pri_B"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_dis_pri_B"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="onRbtn_discount_price_B"
                     android:text="@string/ttl_dis_amount"
-                    android:onClick="onRbtn_discount_price_B"/>
+                    tools:ignore="TouchTargetSizeCheck" />
             </RadioGroup>
 
             <EditText
@@ -384,9 +423,10 @@
                 android:layout_height="0dp"
                 android:layout_weight="17"
                 android:hint=""
-                android:textStyle="bold"
                 android:inputType="number"
-                android:textSize="17sp" />
+                android:textSize="17dp"
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
         </LinearLayout>
 
@@ -405,39 +445,52 @@
             android:id="@+id/btn_cal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:background="@drawable/bak_btn_2"
             android:onClick="onCalcurate"
             app:backgroundTint="@null"
             android:text="@string/btn_cal"
             android:textStyle="bold"
             android:textColor="#fcfcfc"
-            android:textSize="20sp" />
+            android:textSize="20dp" />
 
         <Button
             android:id="@+id/btn_detail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:background="@drawable/bak_btn_1"
             android:onClick="onDetail"
             app:backgroundTint="@null"
             android:text="@string/btn_detail"
             android:textColor="#666666"
-            android:textSize="20sp"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="@drawable/bak_btn_3"
+            android:onClick="onSave"
+            app:backgroundTint="@null"
+            android:text="@string/btn_save"
+            android:textColor="#666666"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_reset"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:background="@drawable/bak_btn_1"
             android:onClick="onReset"
             app:backgroundTint="@null"
             android:text="@string/btn_reset"
             android:textColor="#666666"
-            android:textSize="20sp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
     </LinearLayout>
