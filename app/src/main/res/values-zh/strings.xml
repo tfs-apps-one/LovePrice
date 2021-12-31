@@ -11,6 +11,7 @@
     <string name="ttl_dis_amount">折扣金額</string>
     <string name="btn_cal">計算</string>
     <string name="btn_detail">更多細節</string>
+    <string name="btn_save">SAVE</string>
     <string name="btn_reset">重置</string>
     <string name="ttl_rbtn_tax0">TaxFree</string>
     <string name="ttl_rbtn_tax8">8%</string>

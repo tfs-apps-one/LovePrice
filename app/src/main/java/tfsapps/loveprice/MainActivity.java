@@ -2,6 +2,11 @@
 package tfsapps.loveprice;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -17,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -81,6 +87,25 @@ public class MainActivity extends AppCompatActivity {
     private Locale _local;
     private String _language;
     private String _country;
+
+
+    //  DB関連
+    private MyOpenHelper helper;    //DBアクセス
+    private int db_isopen = 0;      //DB使用したか
+    private int db_tax_type_a = 0;  //DB税金種類
+    private int db_tax_type_b = 0;  //DB
+    private int db_amount_a = 0;    //DB容量
+    private int db_amount_b = 0;    //DB
+    private int db_set_a = 0;       //DB数量
+    private int db_set_b = 0;       //DB
+    private int db_price_a = 0;     //DB金額
+    private int db_price_b = 0;     //DB
+    private int db_point_a = 0;     //DBポイント
+    private int db_point_b = 0;     //DB
+    private int db_discount_a = 0;  //DB値引き額
+    private int db_discount_b = 0;  //DB
+    private int db_dis_type_a = 0;  //DB値引き種類
+    private int db_dis_type_b = 0;  //DB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +228,350 @@ public class MainActivity extends AppCompatActivity {
         mAdview.loadAd(adRequest);
     }
 
+    /* **************************************************
+       各種OS上の動作定義
+    ****************************************************/
+    @Override
+    public void onStart() {
+        super.onStart();
+        //DBのロード
+        /* データベース */
+        helper = new MyOpenHelper(this);
+        AppDBInitRoad();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //  DB更新
+        AppDBUpdated();
+    }
+    @Override
+    public void onStop(){
+        super.onStop();
+        //  DB更新
+        AppDBUpdated();
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        //  DB更新
+        AppDBUpdated();
+    }
+
+    /* **************************************************
+        DB初期ロードおよび設定
+    ****************************************************/
+    public void AppDBInitRoad() {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT");
+        sql.append(" isopen");
+        sql.append(" ,tax_type_a,tax_type_b");
+        sql.append(" ,amount_a,amount_b");
+        sql.append(" ,set_a,set_b");
+        sql.append(" ,price_a,price_b");
+        sql.append(" ,point_a,point_b");
+        sql.append(" ,discount_a,discount_b");
+        sql.append(" ,dis_type_a,dis_type_b");
+        sql.append(" FROM appinfo;");
+        try {
+            Cursor cursor = db.rawQuery(sql.toString(), null);
+            //TextViewに表示
+            StringBuilder text = new StringBuilder();
+            if (cursor.moveToNext()) {
+                db_isopen = cursor.getInt(0);
+                db_tax_type_a = cursor.getInt(1);
+                db_tax_type_b = cursor.getInt(2);
+                db_amount_a = cursor.getInt(3);
+                db_amount_b = cursor.getInt(4);
+                db_set_a = cursor.getInt(5);
+                db_set_b = cursor.getInt(6);
+                db_price_a = cursor.getInt(7);
+                db_price_b = cursor.getInt(8);
+                db_point_a = cursor.getInt(9);
+                db_point_b = cursor.getInt(10);
+                db_discount_a = cursor.getInt(11);
+                db_discount_b = cursor.getInt(12);
+                db_dis_type_a = cursor.getInt(13);
+                db_dis_type_b = cursor.getInt(14);
+            }
+        } finally {
+            db.close();
+        }
+
+        db = helper.getWritableDatabase();
+        if (db_isopen == 0) {
+            long ret;
+            /* 新規レコード追加 */
+            ContentValues insertValues = new ContentValues();
+            insertValues.put("isopen", 1);
+            insertValues.put("tax_type_a", 0);
+            insertValues.put("tax_type_b", 0);
+            insertValues.put("amount_a", 0);
+            insertValues.put("amount_b", 0);
+            insertValues.put("set_a", 0);
+            insertValues.put("set_b", 0);
+            insertValues.put("price_a", 0);
+            insertValues.put("price_b", 0);
+            insertValues.put("point_a", 0);
+            insertValues.put("point_b", 0);
+            insertValues.put("discount_a", 0);
+            insertValues.put("discount_b", 0);
+            insertValues.put("dis_type_a", 0);
+            insertValues.put("dis_type_b", 0);
+            try {
+                ret = db.insert("appinfo", null, insertValues);
+            } finally {
+                db.close();
+            }
+            if (ret == -1) {
+                Toast.makeText(this, "DataBase Create.... ERROR", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "DataBase Create.... OK", Toast.LENGTH_SHORT).show();
+            }
+       } else {
+            Toast.makeText(this, "Data Loading...  tax_a:" + db_tax_type_a, Toast.LENGTH_SHORT).show();
+        }
+    }
+    /* **************************************************
+        DB更新
+    ****************************************************/
+    public void AppDBUpdated() {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues insertValues = new ContentValues();
+        insertValues.put("isopen", db_isopen);
+        insertValues.put("tax_type_a", db_tax_type_a);
+        insertValues.put("tax_type_b", db_tax_type_b);
+        insertValues.put("amount_a", db_amount_a);
+        insertValues.put("amount_b", db_amount_b);
+        insertValues.put("set_a", db_set_a);
+        insertValues.put("set_b", db_set_b);
+        insertValues.put("price_a", db_price_a);
+        insertValues.put("price_b", db_price_b);
+        insertValues.put("point_a", db_point_a);
+        insertValues.put("point_b", db_point_b);
+        insertValues.put("discount_a", db_discount_a);
+        insertValues.put("discount_b", db_discount_b);
+        insertValues.put("dis_type_a", db_dis_type_a);
+        insertValues.put("dis_type_b", db_dis_type_b);
+        int ret;
+        try {
+            ret = db.update("appinfo", insertValues, null, null);
+        } finally {
+            db.close();
+        }
+
+        if (ret == -1) {
+            Toast.makeText(this, "Saving.... ERROR ", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Saving.... OK ", Toast.LENGTH_SHORT).show();
+        }
+    }
+    /* **************************************************
+        各ボタン処理
+    ****************************************************/
+    //  DBデータに設定
+    public void set_DataToDb(){
+        //税率
+        db_tax_type_a = tax_flag_A;
+        db_tax_type_b = tax_flag_B;
+
+        //容量
+        if (inp_amount_A.getText().toString().isEmpty() == false) {
+            db_amount_a = Integer.parseInt(inp_amount_A.getText().toString());
+        }else{
+            db_amount_a = 0;
+        }
+
+        if (inp_amount_B.getText().toString().isEmpty() == false) {
+            db_amount_b = Integer.parseInt(inp_amount_B.getText().toString());
+        }
+        else{
+            db_amount_b = 0;
+        }
+
+        // 数量
+        if (inp_set_A.getText().toString().isEmpty() == false) {
+            db_set_a = Integer.parseInt(inp_set_A.getText().toString());
+        }
+        else{
+            db_set_a = 0;
+        }
+
+        if (inp_set_B.getText().toString().isEmpty() == false) {
+            db_set_b = Integer.parseInt(inp_set_B.getText().toString());
+        }
+        else{
+            db_set_b = 0;
+        }
+
+        // 金額
+        if (inp_pri_A.getText().toString().isEmpty() == false) {
+            db_price_a = Integer.parseInt(inp_pri_A.getText().toString());
+        }
+        else{
+            db_price_a = 0;
+        }
+
+        if (inp_pri_B.getText().toString().isEmpty() == false) {
+            db_price_b = Integer.parseInt(inp_pri_B.getText().toString());
+        }
+        else{
+            db_price_b = 0;
+        }
+
+        //ポイント
+        if (inp_point_A.getText().toString().isEmpty() == false) {
+            db_point_a = Integer.parseInt(inp_point_A.getText().toString());
+        }
+        else{
+            db_point_a = 0;
+        }
+
+        if (inp_point_B.getText().toString().isEmpty() == false) {
+            db_point_b = Integer.parseInt(inp_point_B.getText().toString());
+        }
+        else{
+            db_point_b = 0;
+        }
+
+        // 割引
+        if (inp_discount_A.getText().toString().isEmpty() == false) {
+            db_discount_a = Integer.parseInt(inp_discount_A.getText().toString());
+        }
+        else{
+            db_discount_a = 0;
+        }
+
+        if (inp_discount_B.getText().toString().isEmpty() == false) {
+            db_discount_b = Integer.parseInt(inp_discount_B.getText().toString());
+        }
+        else{
+            db_discount_b = 0;
+        }
+
+        //  割引種類
+        db_dis_type_a = chk_type_A;
+        db_dis_type_b = chk_type_B;
+    }
+
+    //  DBデータを取得
+    public void get_DataToDb(){
+
+        //税金リセット
+        /*
+        RadioGroup rtax_a= (RadioGroup)findViewById(R.id.RadioGroupTax_A);
+        RadioGroup rtax_b= (RadioGroup)findViewById(R.id.RadioGroupTax_B);
+        rtax_a.check(db_tax_type_a);
+        rtax_b.check(db_tax_type_b);
+         */
+        switch (db_tax_type_a){
+            case 0:     rbtn_tax0_A.setChecked(true);   break;
+            case 1:     rbtn_tax8_A.setChecked(true);   break;
+            case 2:     rbtn_tax10_A.setChecked(true);  break;
+
+            default:    rbtn_tax0_A.setChecked(false);
+                        rbtn_tax8_A.setChecked(false);
+                        rbtn_tax10_A.setChecked(false); break;
+
+        }
+        switch (db_tax_type_b){
+            case 0:     rbtn_tax0_B.setChecked(true);   break;
+            case 1:     rbtn_tax8_B.setChecked(true);   break;
+            case 2:     rbtn_tax10_B.setChecked(true);  break;
+
+            default:    rbtn_tax0_B.setChecked(false);
+                        rbtn_tax8_B.setChecked(false);
+                        rbtn_tax10_B.setChecked(false); break;
+        }
+        tax_flag_A = db_tax_type_a;
+        tax_flag_B = db_tax_type_b;
+
+        /* 入力値リセット */
+        if (db_amount_a > 0)    inp_amount_A.setText(""+db_amount_a);
+        if (db_set_a > 0)       inp_set_A.setText(""+db_set_a);
+        if (db_price_a > 0)     inp_pri_A.setText(""+db_price_a);
+        if (db_point_a > 0)     inp_point_A.setText(""+db_point_a);
+        if (db_discount_a > 0)  inp_discount_A.setText(""+db_discount_a);
+        if (db_amount_b > 0)    inp_amount_B.setText(""+db_amount_b);
+        if (db_set_b > 0)       inp_set_B.setText(""+db_set_b);
+        if (db_price_b > 0)     inp_pri_B.setText(""+db_price_b);
+        if (db_point_b > 0)     inp_point_B.setText(""+db_point_b);
+        if (db_discount_b > 0)  inp_discount_B.setText(""+db_discount_b);
+
+        //割引
+        /*
+        RadioGroup rdis_a= (RadioGroup)findViewById(R.id.RadioGroupDiscount_A);
+        RadioGroup rdis_b= (RadioGroup)findViewById(R.id.RadioGroupDiscount_B);
+        rdis_a.check(db_dis_type_a);
+        rdis_b.check(db_dis_type_b);
+         */
+        switch (db_dis_type_a){
+            case 1:     rbtn_dis_per_A.setChecked(true);    break;
+            case 2:     rbtn_dis_pri_A.setChecked(true);    break;
+
+            default:    rbtn_dis_per_A.setChecked(false);
+                        rbtn_dis_pri_A.setChecked(false);   break;
+        }
+        switch (db_dis_type_b){
+            case 1:     rbtn_dis_per_B.setChecked(true);    break;
+            case 2:     rbtn_dis_pri_B.setChecked(true);    break;
+
+            default:    rbtn_dis_per_B.setChecked(false);
+                        rbtn_dis_pri_B.setChecked(false);   break;
+        }
+        chk_type_A = db_dis_type_a;
+        chk_type_B = db_dis_type_b;
+    }
+
+    /* 記憶ボタン */
+    public void onSave(View view) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("〜 短縮入力 機能 〜");
+        builder.setMessage("\n\n短縮入力とは「税率、容量、数量、価格、ポイント、割引」を保存&読込する事が可能です。日常的に使用する条件を保存すると便利です。\n\n操作に応じてボタンを選択して下さい。\n\n\n\n [戻る] 短縮入力画面を閉じる\n [読込] 保存した値を読み込む\n [保存] 入力した値を保存する\n\n\n");
+
+        builder.setPositiveButton("保存", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                //ダイアログ処理
+                set_DataToDb();
+                AppDBUpdated();
+                calcurate_done = false;
+                CalResult();
+            }
+        });
+
+        builder.setNegativeButton("読込", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                get_DataToDb();
+                calcurate_done = false;
+                CalResult();
+            }
+        });
+
+        builder.setNeutralButton("戻る", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                /*
+                *   処理なし（戻るだけ）
+                * */
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
     /* 計算結果詳細 */
     public void onDetail(View view)
     {
@@ -218,14 +587,6 @@ public class MainActivity extends AppCompatActivity {
             if (_language.equals("ja")) {
                 temp_ttl = "「計算」未実行エラー";
                 temp_st = "条件を入力して「計算」を押して下さい\n\n\n\n\n";
-            }
-            else if (_language.equals("zh")) {
-                temp_ttl = "「計算」未執行錯誤";
-                temp_st = "請輸入條件並按「計算」\n\n\n\n\n";
-            }
-            else if (_language.equals("ko")) {
-                temp_ttl = "「계산」미 실행 오류";
-                temp_st = "조건을 입력하고 「계산」을 눌러주세요\n\n\n\n\n";
             }
             else
             {
@@ -249,32 +610,6 @@ public class MainActivity extends AppCompatActivity {
 
                 temp_st = "<<商品Ａ>>\n 最終単位価格　　▶" + pdm.format(data_a) + "円\n 単価（割引含む）▶" + pdm.format(unit_A) + "円\n ポイント還元　　▶" + String.valueOf(point_pri_A) + "pt\n\n" +
                         "<<商品Ｂ>>\n 最終単位価格　　▶" + pdm.format(data_b) + "円\n 単価（割引含む）▶" + pdm.format(unit_B) + "円\n ポイント還元　　▶" + String.valueOf(point_pri_B) + "pt";
-            }
-            else if (_language.equals("zh")) {
-
-                if (data_a < data_b) {
-                    temp_ttl = "產品A是很大的！！";
-                } else if (data_b < data_a) {
-                    temp_ttl = "產品B是很大的！！";
-                } else {
-                    temp_ttl = "兩者都是一樣的";
-                }
-
-                temp_st = "<<產品A>>\n 最終單價　　　▶" + pdm.format(data_a) + "\n 單價（含折扣）▶" + pdm.format(unit_A) + "\n 減少點數　　　▶" + String.valueOf(point_pri_A) + "pt\n\n" +
-                        "<<產品B>>\n 最終單價　　　▶" + pdm.format(data_b) + "\n 單價（含折扣）▶" + pdm.format(unit_B) + "\n 減少點數　　　▶" + String.valueOf(point_pri_B) + "pt";
-            }
-            else if (_language.equals("ko")) {
-
-                if (data_a < data_b) {
-                    temp_ttl = "제품 A가 거래！！";
-                } else if (data_b < data_a) {
-                    temp_ttl = "제품 B가 거래！！";
-                } else {
-                    temp_ttl = "모두 같은";
-                }
-
-                temp_st = "<<상품 A>>\n 마지막 단위 가격　▶" + pdm.format(data_a) + "\n 단가 （할인 포함）▶" + pdm.format(unit_A) + "\n 포인트 환원 　　　▶" + String.valueOf(point_pri_A) + "pt\n\n" +
-                        "<<상품 B>>\n 마지막 단위 가격　▶" + pdm.format(data_b) + "\n 단가 （할인 포함）▶" + pdm.format(unit_B) + "\n 포인트 환원 　　　▶" + String.valueOf(point_pri_B) + "pt";
             }
             else {
                 if (data_a < data_b) {

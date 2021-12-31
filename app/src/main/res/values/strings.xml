@@ -11,6 +11,7 @@
     <string name="ttl_dis_amount">discount amount</string>
     <string name="btn_cal">CAL.</string>
     <string name="btn_detail">DETAIL</string>
+    <string name="btn_save">SAVE</string>
     <string name="btn_reset">RESET</string>
     <string name="ttl_rbtn_tax0">TaxFree</string>
     <string name="ttl_rbtn_tax8">8%</string>
