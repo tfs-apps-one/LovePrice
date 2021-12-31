@@ -247,20 +247,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause(){
         super.onPause();
-        //  DB更新
-        AppDBUpdated();
     }
     @Override
     public void onStop(){
         super.onStop();
-        //  DB更新
-        AppDBUpdated();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        //  DB更新
-        AppDBUpdated();
     }
 
     /* **************************************************
@@ -329,13 +323,17 @@ public class MainActivity extends AppCompatActivity {
             } finally {
                 db.close();
             }
+            /*
             if (ret == -1) {
                 Toast.makeText(this, "DataBase Create.... ERROR", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "DataBase Create.... OK", Toast.LENGTH_SHORT).show();
             }
+            */
        } else {
+            /*
             Toast.makeText(this, "Data Loading...  tax_a:" + db_tax_type_a, Toast.LENGTH_SHORT).show();
+             */
         }
     }
     /* **************************************************
@@ -365,12 +363,13 @@ public class MainActivity extends AppCompatActivity {
         } finally {
             db.close();
         }
-
+        /*
         if (ret == -1) {
             Toast.makeText(this, "Saving.... ERROR ", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Saving.... OK ", Toast.LENGTH_SHORT).show();
         }
+         */
     }
     /* **************************************************
         各ボタン処理
@@ -464,16 +463,10 @@ public class MainActivity extends AppCompatActivity {
     public void get_DataToDb(){
 
         //税金リセット
-        /*
-        RadioGroup rtax_a= (RadioGroup)findViewById(R.id.RadioGroupTax_A);
-        RadioGroup rtax_b= (RadioGroup)findViewById(R.id.RadioGroupTax_B);
-        rtax_a.check(db_tax_type_a);
-        rtax_b.check(db_tax_type_b);
-         */
         switch (db_tax_type_a){
-            case 0:     rbtn_tax0_A.setChecked(true);   break;
-            case 1:     rbtn_tax8_A.setChecked(true);   break;
-            case 2:     rbtn_tax10_A.setChecked(true);  break;
+            case 1:     rbtn_tax0_A.setChecked(true);   break;
+            case 2:     rbtn_tax8_A.setChecked(true);   break;
+            case 3:     rbtn_tax10_A.setChecked(true);  break;
 
             default:    rbtn_tax0_A.setChecked(false);
                         rbtn_tax8_A.setChecked(false);
@@ -481,9 +474,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
         switch (db_tax_type_b){
-            case 0:     rbtn_tax0_B.setChecked(true);   break;
-            case 1:     rbtn_tax8_B.setChecked(true);   break;
-            case 2:     rbtn_tax10_B.setChecked(true);  break;
+            case 1:     rbtn_tax0_B.setChecked(true);   break;
+            case 2:     rbtn_tax8_B.setChecked(true);   break;
+            case 3:     rbtn_tax10_B.setChecked(true);  break;
 
             default:    rbtn_tax0_B.setChecked(false);
                         rbtn_tax8_B.setChecked(false);
@@ -494,23 +487,36 @@ public class MainActivity extends AppCompatActivity {
 
         /* 入力値リセット */
         if (db_amount_a > 0)    inp_amount_A.setText(""+db_amount_a);
+        else                    inp_amount_A.setText("");
+
         if (db_set_a > 0)       inp_set_A.setText(""+db_set_a);
+        else                    inp_set_A.setText("");
+
         if (db_price_a > 0)     inp_pri_A.setText(""+db_price_a);
+        else                    inp_pri_A.setText("");
+
         if (db_point_a > 0)     inp_point_A.setText(""+db_point_a);
+        else                    inp_point_A.setText("");
+
         if (db_discount_a > 0)  inp_discount_A.setText(""+db_discount_a);
+        else                    inp_discount_A.setText("");
+
         if (db_amount_b > 0)    inp_amount_B.setText(""+db_amount_b);
+        else                    inp_amount_B.setText("");
+
         if (db_set_b > 0)       inp_set_B.setText(""+db_set_b);
+        else                    inp_set_B.setText("");
+
         if (db_price_b > 0)     inp_pri_B.setText(""+db_price_b);
+        else                    inp_pri_B.setText("");
+
         if (db_point_b > 0)     inp_point_B.setText(""+db_point_b);
+        else                    inp_point_B.setText("");
+
         if (db_discount_b > 0)  inp_discount_B.setText(""+db_discount_b);
+        else                    inp_discount_B.setText("");
 
         //割引
-        /*
-        RadioGroup rdis_a= (RadioGroup)findViewById(R.id.RadioGroupDiscount_A);
-        RadioGroup rdis_b= (RadioGroup)findViewById(R.id.RadioGroupDiscount_B);
-        rdis_a.check(db_dis_type_a);
-        rdis_b.check(db_dis_type_b);
-         */
         switch (db_dis_type_a){
             case 1:     rbtn_dis_per_A.setChecked(true);    break;
             case 2:     rbtn_dis_pri_A.setChecked(true);    break;
@@ -644,37 +650,37 @@ public class MainActivity extends AppCompatActivity {
     /* 税設定Ａ 0%  */
     public void onRbtn_tax0_A(View view)
     {
-        tax_flag_A = 0;
+        tax_flag_A = 1;
         tax_disp();
     }
     /* 税設定Ａ 8%  */
     public void onRbtn_tax8_A(View view)
     {
-        tax_flag_A = 1;
+        tax_flag_A = 2;
         tax_disp();
     }
     /* 税設定Ａ 10% */
     public void onRbtn_tax10_A(View view)
     {
-        tax_flag_A = 2;
+        tax_flag_A = 3;
         tax_disp();
     }
     /* 税設定Ｂ 0%  */
     public void onRbtn_tax0_B(View view)
     {
-        tax_flag_B = 0;
+        tax_flag_B = 1;
         tax_disp();
     }
     /* 税設定Ｂ 0%  */
     public void onRbtn_tax8_B(View view)
     {
-        tax_flag_B = 1;
+        tax_flag_B = 2;
         tax_disp();
     }
     /* 税設定Ｂ 0%  */
     public void onRbtn_tax10_B(View view)
     {
-        tax_flag_B = 2;
+        tax_flag_B = 3;
         tax_disp();
     }
 
@@ -904,16 +910,16 @@ public class MainActivity extends AppCompatActivity {
         int pri_b = Integer.parseInt(inp_pri_B.getText().toString());
 
         // 税金補正処理追加
-        if (tax_flag_A == 1) {  //8%
+        if (tax_flag_A == 2) {  //8%
             pri_a = (pri_a * 108) / 100;
         }
-        else if (tax_flag_A == 2) {  //10%
+        else if (tax_flag_A == 3) {  //10%
             pri_a = (pri_a * 110) / 100;
         }
-        if (tax_flag_B == 1) {  //8%
+        if (tax_flag_B == 2) {  //8%
             pri_b = (pri_b * 108) / 100;
         }
-        else if (tax_flag_B == 2) {  //10%
+        else if (tax_flag_B == 3) {  //10%
             pri_b = (pri_b * 110) / 100;
         }
 
