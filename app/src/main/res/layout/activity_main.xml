@@ -18,7 +18,6 @@
         android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="3dp"
         android:layout_marginEnd="3dp"
         android:layout_marginStart="3dp"
         android:layout_marginTop="3dp"
@@ -86,6 +85,7 @@
                 android:layout_marginStart="3dp"
                 android:orientation="horizontal">
 
+                <!--
                 <RadioButton
                     android:id="@+id/rbtn_tax0_A"
                     android:layout_width="wrap_content"
@@ -93,7 +93,7 @@
                     android:onClick="onRbtn_tax0_A"
                     android:text="@string/ttl_rbtn_tax0"
                     tools:ignore="TouchTargetSizeCheck" />
-
+                -->
                 <RadioButton
                     android:id="@+id/rbtn_tax8_A"
                     android:layout_width="wrap_content"
@@ -271,6 +271,7 @@
                 android:layout_marginStart="3dp"
                 android:orientation="horizontal">
 
+                <!--
                 <RadioButton
                     android:id="@+id/rbtn_tax0_B"
                     android:layout_width="wrap_content"
@@ -278,7 +279,7 @@
                     android:onClick="onRbtn_tax0_B"
                     android:text="@string/ttl_rbtn_tax0"
                     tools:ignore="TouchTargetSizeCheck" />
-
+                -->
                 <RadioButton
                     android:id="@+id/rbtn_tax8_B"
                     android:layout_width="wrap_content"
@@ -445,7 +446,7 @@
             android:id="@+id/btn_cal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:background="@drawable/bak_btn_2"
             android:onClick="onCalcurate"
             app:backgroundTint="@null"
@@ -458,7 +459,7 @@
             android:id="@+id/btn_detail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:background="@drawable/bak_btn_1"
             android:onClick="onDetail"
             app:backgroundTint="@null"
@@ -471,7 +472,7 @@
             android:id="@+id/btn_save"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:background="@drawable/bak_btn_3"
             android:onClick="onSave"
             app:backgroundTint="@null"
@@ -499,6 +500,7 @@
         android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="1dp"
         android:gravity="center|bottom"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp">

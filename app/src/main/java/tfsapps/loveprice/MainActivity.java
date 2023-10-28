@@ -4,6 +4,7 @@ package tfsapps.loveprice;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +15,7 @@ import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -55,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText inp_point_B;
     private EditText inp_chk_temp;
 
-    private RadioButton rbtn_tax0_A;
+//    private RadioButton rbtn_tax0_A;
     private RadioButton rbtn_tax8_A;
     private RadioButton rbtn_tax10_A;
-    private RadioButton rbtn_tax0_B;
+//    private RadioButton rbtn_tax0_B;
     private RadioButton rbtn_tax8_B;
     private RadioButton rbtn_tax10_B;
 
@@ -164,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
         inp_discount_B.setBackgroundTintList(null);
         inp_discount_B.setTextColor(Color.BLACK);
 
-        rbtn_tax0_A = (RadioButton)findViewById((R.id.rbtn_tax0_A));
-        rbtn_tax0_A.setBackgroundTintList(null);
-        rbtn_tax0_A.setTextColor(Color.DKGRAY);
+//        rbtn_tax0_A = (RadioButton)findViewById((R.id.rbtn_tax0_A));
+//        rbtn_tax0_A.setBackgroundTintList(null);
+//        rbtn_tax0_A.setTextColor(Color.DKGRAY);
         rbtn_tax8_A = (RadioButton)findViewById((R.id.rbtn_tax8_A));
         rbtn_tax8_A.setBackgroundTintList(null);
         rbtn_tax8_A.setTextColor(Color.DKGRAY);
@@ -174,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
         rbtn_tax10_A.setBackgroundTintList(null);
         rbtn_tax10_A.setTextColor(Color.DKGRAY);
 
-        rbtn_tax0_B = (RadioButton)findViewById((R.id.rbtn_tax0_B));
-        rbtn_tax0_B.setBackgroundTintList(null);
-        rbtn_tax0_B.setTextColor(Color.DKGRAY);
+//        rbtn_tax0_B = (RadioButton)findViewById((R.id.rbtn_tax0_B));
+//        rbtn_tax0_B.setBackgroundTintList(null);
+//        rbtn_tax0_B.setTextColor(Color.DKGRAY);
         rbtn_tax8_B = (RadioButton)findViewById((R.id.rbtn_tax8_B));
         rbtn_tax8_B.setBackgroundTintList(null);
         rbtn_tax8_B.setTextColor(Color.DKGRAY);
@@ -464,21 +466,23 @@ public class MainActivity extends AppCompatActivity {
 
         //税金リセット
         switch (db_tax_type_a){
-            case 1:     rbtn_tax0_A.setChecked(true);   break;
+//            case 1:     rbtn_tax0_A.setChecked(true);   break;
             case 2:     rbtn_tax8_A.setChecked(true);   break;
             case 3:     rbtn_tax10_A.setChecked(true);  break;
 
-            default:    rbtn_tax0_A.setChecked(false);
+            default:
+//                        rbtn_tax0_A.setChecked(false);
                         rbtn_tax8_A.setChecked(false);
                         rbtn_tax10_A.setChecked(false); break;
 
         }
         switch (db_tax_type_b){
-            case 1:     rbtn_tax0_B.setChecked(true);   break;
+//            case 1:     rbtn_tax0_B.setChecked(true);   break;
             case 2:     rbtn_tax8_B.setChecked(true);   break;
             case 3:     rbtn_tax10_B.setChecked(true);  break;
 
-            default:    rbtn_tax0_B.setChecked(false);
+            default:
+//                        rbtn_tax0_B.setChecked(false);
                         rbtn_tax8_B.setChecked(false);
                         rbtn_tax10_B.setChecked(false); break;
         }
@@ -576,6 +580,9 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /* 計算結果詳細 */
@@ -641,6 +648,10 @@ public class MainActivity extends AppCompatActivity {
             temp_ad.setPositiveButton("CANCEL", null);
         }
         temp_ad.show();
+
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     public void tax_disp()
@@ -1084,6 +1095,10 @@ public class MainActivity extends AppCompatActivity {
             //結果表示
             CalResult();
         }
+
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /* リセット */
@@ -1125,6 +1140,10 @@ public class MainActivity extends AppCompatActivity {
 
         /* 初期表示 */
         CalResult();
+
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /* 割引きＡ　％ */
