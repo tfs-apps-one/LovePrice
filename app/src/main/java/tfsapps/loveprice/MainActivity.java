@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -15,6 +16,7 @@ import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -30,8 +32,10 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 //　広告
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
 
 public class MainActivity extends AppCompatActivity {
     private TextView text_item_A;
@@ -84,6 +88,15 @@ public class MainActivity extends AppCompatActivity {
 
     // 広告
     private AdView mAdview;
+    private LinearLayout admobLayout;
+    private boolean visibleAd = true;
+    private boolean isKeyboardVisible = false;
+    private View rootView;
+    private int iniScreenHight = 0;
+    //本番 ID
+    private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
+    //テスト ID　
+    // Private String test_adUnitID = "ca-app-pub-3940256099942544/6300978111";
 
     //  国設定
     private Locale _local;
@@ -225,10 +238,69 @@ public class MainActivity extends AppCompatActivity {
         CalResult();
 
         //広告
+        /*
         mAdview = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdview.loadAd(adRequest);
+         */
+
+        MobileAds.initialize(this);
+        mAdview = new AdView(this);
+        mAdview.setAdUnitId(adUnitID);
+        mAdview.setAdSize(AdSize.BANNER);
+        admobLayout = findViewById(R.id.adView);
+        admobLayout.addView(mAdview);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdview.loadAd(adRequest);
+
+        /* 広告動的表示 */
+        rootView = findViewById(android.R.id.content);
+        ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+
+                int screenHeight = rootView.getHeight();
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (iniScreenHight == 0){
+                    iniScreenHight = screenHeight;
+                }
+                if (iniScreenHight > screenHeight) {
+                    // ソフトキーボードが表示されている場合
+                    AdViewActive(false);
+                } else {
+                    // ソフトキーボードが非表示の場合
+                    AdViewActive(true);
+                }
+            }
+        });
     }
+    /*
+        広告を動的表示・非表示
+    * */
+    public void AdViewActive(boolean flag){
+        //if (!visibleAd) {
+        if (flag != visibleAd){
+            visibleAd = flag;
+        }
+        else{
+            return;
+        }
+        if (visibleAd){
+            // admob 表示
+            admobLayout.addView(mAdview);
+            admobLayout.setVisibility(LinearLayout.VISIBLE);
+            mAdview.setVisibility(AdView.VISIBLE);
+        } else {
+            // admob 非表示
+            mAdview.setVisibility(AdView.GONE);
+            admobLayout.removeView(mAdview);
+        }
+    }
+
 
     /* **************************************************
        各種OS上の動作定義
@@ -1095,6 +1167,8 @@ public class MainActivity extends AppCompatActivity {
             //結果表示
             CalResult();
         }
+
+//        AdViewActive();
 
         /* ソフトキーボードを隠す */
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
