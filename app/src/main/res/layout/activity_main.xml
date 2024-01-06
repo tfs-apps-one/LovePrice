@@ -192,6 +192,7 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:text="@string/ttl_point_2"
+                android:textColor="@color/colorDarkGray2"
                 android:textSize="10dp" />
 
             <EditText
@@ -378,6 +379,7 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginStart="3dp"
                 android:text="@string/ttl_point_2"
+                android:textColor="@color/colorDarkGray2"
                 android:textSize="10dp" />
 
             <EditText
@@ -461,7 +463,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:background="@drawable/bak_btn_1"
-            android:onClick="onDetail"
+            android:onClick="onAddFunc"
             app:backgroundTint="@null"
             android:text="@string/btn_detail"
             android:textColor="#666666"

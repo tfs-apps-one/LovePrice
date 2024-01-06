@@ -1,8 +1,10 @@
 
 package tfsapps.loveprice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,7 +37,12 @@ import java.util.Locale;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 public class MainActivity extends AppCompatActivity {
     private TextView text_item_A;
@@ -93,16 +100,31 @@ public class MainActivity extends AppCompatActivity {
     private boolean isKeyboardVisible = false;
     private View rootView;
     private int iniScreenHight = 0;
+//test_make
     //本番 ID
     private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
     //テスト ID　
-    // Private String test_adUnitID = "ca-app-pub-3940256099942544/6300978111";
+//    private String adUnitID = "ca-app-pub-3940256099942544/6300978111";
+    // リワード広告
+    public LoadAdError adError;
+    public RewardedAd rewardedAd = null;
+//test_make
+    // 本番ID
+    private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
+    //テストID
+//    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+
+    //自動計算
+//test_make
+//    private int REWARD_AUTO_CAL = 5;
+    private int REWARD_AUTO_CAL = 69;
+    private boolean auto_cal = false;
+    private boolean invalid_cal = false;
 
     //  国設定
     private Locale _local;
     private String _language;
     private String _country;
-
 
     //  DB関連
     private MyOpenHelper helper;    //DBアクセス
@@ -121,6 +143,16 @@ public class MainActivity extends AppCompatActivity {
     private int db_discount_b = 0;  //DB
     private int db_dis_type_a = 0;  //DB値引き種類
     private int db_dis_type_b = 0;  //DB
+    private int db_data1 = 0;       //DB
+    private int db_data2 = 0;       //DB
+    private int db_data3 = 0;       //DB
+    private int db_data4 = 0;       //DB
+    private int db_data5 = 0;       //DB
+    private int db_data6 = 0;       //DB
+    private int db_data7 = 0;       //DB
+    private int db_data8 = 0;       //DB
+    private int db_data9 = 0;       //DB
+    private int db_data10 = 0;       //DB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,6 +285,9 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdview.loadAd(adRequest);
 
+        //動画リワード
+        loadRewardedAd();
+
         /* 広告動的表示 */
         rootView = findViewById(android.R.id.content);
         ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
@@ -301,6 +336,54 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /************************
+     リワード広告処理
+     *************************/
+    private void loadRewardedAd() {
+        RewardedAd.load(this,
+                AD_UNIT_ID,
+                new AdRequest.Builder().build(),
+                new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedAd Ad) {
+                        rewardedAd = Ad;
+//                        Context context = getApplicationContext();
+//                        Toast.makeText(context, "報酬動画準備OK !!", Toast.LENGTH_SHORT).show();
+//                        Log.d("TAG", "The rewarded ad loaded.");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError adError) {
+//                        Log.d("TAG", "The rewarded ad wasn't loaded yet.");
+                    }
+                });
+
+    }
+    public void RdShow(){
+        if (rewardedAd != null) {
+            Activity activityContext = MainActivity.this;
+            rewardedAd.show(activityContext, new OnUserEarnedRewardListener() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    // Handle the reward.
+                    int rewardAmount = rewardItem.getAmount();
+                    String rewardType = rewardItem.getType();
+                    RdPresent();
+                }
+            });
+        } else {
+//            Log.d("TAG", "The rewarded ad wasn't ready yet.");
+        }
+    }
+    public void RdPresent() {
+        Context context = getApplicationContext();
+        Toast.makeText(context, "自動計算[ON]", Toast.LENGTH_SHORT).show();
+        db_data1 = REWARD_AUTO_CAL;
+        CalBtnDisp();
+        loadRewardedAd();
+    }
+
+
 
     /* **************************************************
        各種OS上の動作定義
@@ -312,23 +395,27 @@ public class MainActivity extends AppCompatActivity {
         /* データベース */
         helper = new MyOpenHelper(this);
         AppDBInitRoad();
+        CalBtnDisp();
     }
     @Override
     public void onResume() {
         super.onResume();
+        AppDBUpdated(); //DB保存
     }
-
     @Override
     public void onPause(){
         super.onPause();
+        AppDBUpdated(); //DB保存
     }
     @Override
     public void onStop(){
         super.onStop();
+        AppDBUpdated(); //DB保存
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
+        AppDBUpdated(); //DB保存
     }
 
     /* **************************************************
@@ -346,6 +433,11 @@ public class MainActivity extends AppCompatActivity {
         sql.append(" ,point_a,point_b");
         sql.append(" ,discount_a,discount_b");
         sql.append(" ,dis_type_a,dis_type_b");
+        sql.append(" ,data1,data2");
+        sql.append(" ,data3,data4");
+        sql.append(" ,data5,data6");
+        sql.append(" ,data7,data8");
+        sql.append(" ,data9,data10");
         sql.append(" FROM appinfo;");
         try {
             Cursor cursor = db.rawQuery(sql.toString(), null);
@@ -367,6 +459,16 @@ public class MainActivity extends AppCompatActivity {
                 db_discount_b = cursor.getInt(12);
                 db_dis_type_a = cursor.getInt(13);
                 db_dis_type_b = cursor.getInt(14);
+                db_data1 = cursor.getInt(15);
+                db_data2 = cursor.getInt(16);
+                db_data3 = cursor.getInt(17);
+                db_data4 = cursor.getInt(18);
+                db_data5 = cursor.getInt(19);
+                db_data6 = cursor.getInt(20);
+                db_data7 = cursor.getInt(21);
+                db_data8 = cursor.getInt(22);
+                db_data9 = cursor.getInt(23);
+                db_data10 = cursor.getInt(24);
             }
         } finally {
             db.close();
@@ -392,6 +494,16 @@ public class MainActivity extends AppCompatActivity {
             insertValues.put("discount_b", 0);
             insertValues.put("dis_type_a", 0);
             insertValues.put("dis_type_b", 0);
+            insertValues.put("data1", 0);
+            insertValues.put("data2", 0);
+            insertValues.put("data3", 0);
+            insertValues.put("data4", 0);
+            insertValues.put("data5", 0);
+            insertValues.put("data6", 0);
+            insertValues.put("data7", 0);
+            insertValues.put("data8", 0);
+            insertValues.put("data9", 0);
+            insertValues.put("data10", 0);
             try {
                 ret = db.insert("appinfo", null, insertValues);
             } finally {
@@ -431,11 +543,26 @@ public class MainActivity extends AppCompatActivity {
         insertValues.put("discount_b", db_discount_b);
         insertValues.put("dis_type_a", db_dis_type_a);
         insertValues.put("dis_type_b", db_dis_type_b);
+        insertValues.put("data1", db_data1);
+        insertValues.put("data2", db_data2);
+        insertValues.put("data3", db_data3);
+        insertValues.put("data4", db_data4);
+        insertValues.put("data5", db_data5);
+        insertValues.put("data6", db_data6);
+        insertValues.put("data7", db_data7);
+        insertValues.put("data8", db_data8);
+        insertValues.put("data9", db_data9);
+        insertValues.put("data10", db_data10);
         int ret;
         try {
             ret = db.update("appinfo", insertValues, null, null);
         } finally {
             db.close();
+        }
+        if (ret != -1){
+            Context context = getApplicationContext();
+            Toast.makeText(context, "セーブ中...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "セーブ中...("+db_data1+")...", Toast.LENGTH_SHORT).show();
         }
         /*
         if (ret == -1) {
@@ -634,9 +761,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
+                //バックアップ
+//                boolean bk_flag = auto_cal;
+//                int bk_data1 = db_data1;
+                invalid_cal = true;
+
                 get_DataToDb();
                 calcurate_done = false;
                 CalResult();
+
+                //バックアップのロード
+//                auto_cal = bk_flag;
+//                db_data1 = bk_data1;
+                invalid_cal = false;
+                CalBtnDisp();
             }
         });
 
@@ -726,6 +864,129 @@ public class MainActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    /* 便利ボタン */
+    public void onAddFunc(View view){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("〜 便利　自動計算[ON] 〜");
+        builder.setMessage("\n\n広告動画を視聴して「自動計算」を有効にしますか？" +
+                "\n\n「自動計算」とは価格、容量、数量などを入力するだけで自動的に金額計算を行います。「計算」ボタンの操作が不要となります。" +
+                "\n\nしばらく使用すると「自動計算」は無効になります、続けて「自動計算」を利用する場合は再視聴下さい。" +
+                "\n\n [戻る] 画面を閉じる" +
+                "\n [視聴] 広告動画を視聴する" +
+                "\n");
+
+        builder.setPositiveButton("視聴", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                //ダイアログ処理
+                //test_make
+                RdShow();
+            }
+        });
+
+        builder.setNeutralButton("戻る", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                /*
+                 *   処理なし（戻るだけ）
+                 * */
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /* 自動計算　督促表示 */
+    public void RewardRecommend(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("〜 便利　自動計算[OFF] 〜");
+        builder.setMessage("" +
+                "\n\n「自動計算」が無効となりました。" +
+                "\n\n広告動画を視聴して「自動計算」を有効にしますか？" +
+                "\n\n" +
+                "\n\n" +
+                "\n\n [戻る] 今は視聴しない" +
+                "\n [視聴] 広告動画を視聴する" +
+                "\n");
+
+        builder.setPositiveButton("視聴", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                //ダイアログ処理
+                //test_make
+                RdShow();
+            }
+        });
+
+        builder.setNeutralButton("戻る", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                /*
+                 *   処理なし（戻るだけ）
+                 * */
+                CalBtnDisp();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    /********************************************
+     *  自動計算処理
+     ********************************************/
+    public void Auto_Cal()
+    {
+        if (inp_pri_A.getText().toString().isEmpty() ) return;
+        if (inp_pri_B.getText().toString().isEmpty() ) return;
+
+        int pri_a = Integer.parseInt(inp_pri_A.getText().toString());
+        int pri_b = Integer.parseInt(inp_pri_B.getText().toString());
+
+        //自動計算無効の場合はスキップする
+        if (invalid_cal){
+            return;
+        }
+
+        //自動計算可否判断
+        if (db_data1 > 0){
+            auto_cal = true;
+        }
+        else{
+            auto_cal = false;
+        }
+
+        //自動計算処理
+        if (auto_cal){
+            if (pri_a > 0 && pri_b > 0){
+                PriceCalcurate();
+                db_data1--; //計算をしたのでデクリメント
+                if (db_data1 <= 0){
+                    db_data1 = 0;
+                    RewardRecommend();
+                }
+                calcurate_done = false;
+            }
+        }
+        else {
+            CalBtnDisp();
+        }
+
+//test_make
+//        Context context = getApplicationContext();
+//        Toast.makeText(context, "" + auto_cal + db_data1, Toast.LENGTH_SHORT).show();
+
+    }
+
     public void tax_disp()
     {
     }
@@ -767,6 +1028,28 @@ public class MainActivity extends AppCompatActivity {
         tax_disp();
     }
 
+    public void CalBtnDisp(){
+        Button btn_cal = findViewById(R.id.btn_cal);
+
+        //自動計算可否判断
+        if (db_data1 > 0){
+            auto_cal = true;
+        }
+        else{
+            auto_cal = false;
+        }
+
+        btn_cal.setBackgroundTintList(null);
+        if (auto_cal){
+            btn_cal.setBackgroundResource(R.drawable.bak_btn_4);
+            btn_cal.setText("自動");
+        }
+        else{
+            btn_cal.setBackgroundResource(R.drawable.bak_btn_2);
+            btn_cal.setText("計算");
+        }
+    }
+
     /* 結果 */
     public void CalResult()
     {
@@ -783,6 +1066,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout temp_v4 = (LinearLayout)findViewById(R.id.linearLayout4);
 
         tax_disp();
+
+        CalBtnDisp();
 
         DecimalFormat pdm = new DecimalFormat("#0.00");
 
@@ -1126,7 +1411,17 @@ public class MainActivity extends AppCompatActivity {
         unit_B = temp_b;
         return 1;
     }
+    //test_make
     public void onCalcurate(View view)
+    {
+        PriceCalcurate();
+
+        /* ソフトキーボードを隠す */
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    public void PriceCalcurate()
+//    public void onCalcurate(View view)
     {
         int ret;
 
@@ -1170,14 +1465,20 @@ public class MainActivity extends AppCompatActivity {
 
 //        AdViewActive();
 
+//test_make
         /* ソフトキーボードを隠す */
-        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /* リセット */
     public void onReset(View view)
     {
+        //バックアップ
+//        boolean bk_flag = auto_cal;
+//        int bk_data1 = db_data1;
+        invalid_cal = true;
+
         unit_A = 0;
         unit_B = 0;
         point_pri_A = 0;
@@ -1214,6 +1515,13 @@ public class MainActivity extends AppCompatActivity {
 
         /* 初期表示 */
         CalResult();
+
+        //バックアップのロード
+//        auto_cal = bk_flag;
+//        db_data1 = bk_data1;
+        invalid_cal = false;
+        CalBtnDisp();
+
 
         /* ソフトキーボードを隠す */
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1302,6 +1610,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ad.show();
             }
+
+            Auto_Cal();
         }
     }
 }

@@ -10,7 +10,7 @@
     <string name="ttl_dis_rate">割引 %</string>
     <string name="ttl_dis_amount">-円</string>
     <string name="btn_cal">計算</string>
-    <string name="btn_detail">詳細</string>
+    <string name="btn_detail">便利</string>
     <string name="btn_save">短縮</string>
     <string name="btn_reset">ﾘｾｯﾄ</string>
     <string name="ttl_rbtn_tax0">税抜</string>

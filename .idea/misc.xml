@@ -6,13 +6,14 @@
         <entry key="app/src/main/res/drawable/bak_btn_1.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_btn_2.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_btn_3.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/drawable/bak_btn_4.xml" value="0.2375" />
         <entry key="app/src/main/res/drawable/bak_select.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_select_box.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_status.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_tax.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_ttl.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/drawable/bak_ttl_noselect.xml" value="0.2682291666666667" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.375" />
       </map>
     </option>
   </component>
