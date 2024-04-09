@@ -5,12 +5,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -116,10 +119,15 @@ public class MainActivity extends AppCompatActivity {
 
     //自動計算
 //test_make
-//    private int REWARD_AUTO_CAL = 5;
     private int REWARD_AUTO_CAL = 69;
     private boolean auto_cal = false;
     private boolean invalid_cal = false;
+
+    //評価ポップアップ
+    private int ReviewCount = 1;
+//test_make
+//    private int REVIEW_POP = 3;
+    private int REVIEW_POP = 15;
 
     //  国設定
     private Locale _local;
@@ -143,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
     private int db_discount_b = 0;  //DB
     private int db_dis_type_a = 0;  //DB値引き種類
     private int db_dis_type_b = 0;  //DB
-    private int db_data1 = 0;       //DB
-    private int db_data2 = 0;       //DB
+    private int db_data1 = 0;       //DB 自動計算フラグ
+    private int db_data2 = 0;       //DB 評価ポップアップ
     private int db_data3 = 0;       //DB
     private int db_data4 = 0;       //DB
     private int db_data5 = 0;       //DB
@@ -384,6 +392,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void ShowRatingPopup() {
+
+        String ttl = "";
+        String mess = "";
+
+        //アプリを起動して 20回目の時
+        if (db_data2 != REVIEW_POP){
+            return;
+        }
+        else {
+            db_data2++;
+        }
+        ttl =   "★☆アプリ評価のお願い☆★";
+        mess =  "\nいつもご利用ありがとうございます\n"+
+                "\nたくさん利用して頂いている貴方にお願いです。アプリを評価してもらませんか？ 評価して頂けると励みになります。"+
+                "\n\n(この通知は今回限りです)"+
+                "\n\n\n";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(ttl);
+        builder.setMessage(mess);
+        builder.setPositiveButton("評価する", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RedirectToPlayStoreForRating();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("　後で　", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    private void ShowRatingPopupNG() {
+        String ttl = "";
+        String mess = "";
+
+        ttl = "接続に失敗しました";
+        mess = "\n評価サイトへのアクセスに失敗しました\n" +
+                "\n" +
+                "\n\n" +
+                "\n\n\n";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(ttl);
+        builder.setMessage(mess);
+        builder.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    private void RedirectToPlayStoreForRating() {
+        try {
+            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName());
+            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(goToMarket);
+        } catch (ActivityNotFoundException e) {
+            ShowRatingPopupNG();
+        }
+    }
+
 
     /* **************************************************
        各種OS上の動作定義
@@ -396,26 +475,34 @@ public class MainActivity extends AppCompatActivity {
         helper = new MyOpenHelper(this);
         AppDBInitRoad();
         CalBtnDisp();
+
+        //評価ポップアップ処理
+        if (db_data2 <= REVIEW_POP){
+            if (ReviewCount != 0){
+                db_data2++;
+                ReviewCount = 0;
+            }
+        }
+        ShowRatingPopup();
     }
     @Override
     public void onResume() {
         super.onResume();
-        AppDBUpdated(); //DB保存
     }
     @Override
     public void onPause(){
         super.onPause();
-        AppDBUpdated(); //DB保存
+        AppDBUpdated(false); //DB保存
     }
     @Override
     public void onStop(){
         super.onStop();
-        AppDBUpdated(); //DB保存
+        AppDBUpdated(false); //DB保存
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        AppDBUpdated(); //DB保存
+        AppDBUpdated(false); //DB保存
     }
 
     /* **************************************************
@@ -525,7 +612,7 @@ public class MainActivity extends AppCompatActivity {
     /* **************************************************
         DB更新
     ****************************************************/
-    public void AppDBUpdated() {
+    public void AppDBUpdated(boolean isdisp) {
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues insertValues = new ContentValues();
         insertValues.put("isopen", db_isopen);
@@ -560,9 +647,11 @@ public class MainActivity extends AppCompatActivity {
             db.close();
         }
         if (ret != -1){
-            Context context = getApplicationContext();
-            Toast.makeText(context, "セーブ中...", Toast.LENGTH_SHORT).show();
-//            Toast.makeText(context, "セーブ中...("+db_data1+")...", Toast.LENGTH_SHORT).show();
+            if (isdisp) {
+                Context context = getApplicationContext();
+                Toast.makeText(context, "セーブ中...", Toast.LENGTH_SHORT).show();
+//               Toast.makeText(context, "セーブ中...("+db_data1+")...", Toast.LENGTH_SHORT).show();
+            }
         }
         /*
         if (ret == -1) {
@@ -751,7 +840,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 //ダイアログ処理
                 set_DataToDb();
-                AppDBUpdated();
+                AppDBUpdated(true);
                 calcurate_done = false;
                 CalResult();
             }
@@ -787,6 +876,7 @@ public class MainActivity extends AppCompatActivity {
                 * */
             }
         });
+        builder.setCancelable(false);
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -895,6 +985,7 @@ public class MainActivity extends AppCompatActivity {
                  * */
             }
         });
+        builder.setCancelable(false);
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -936,6 +1027,7 @@ public class MainActivity extends AppCompatActivity {
                 CalBtnDisp();
             }
         });
+        builder.setCancelable(false);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
