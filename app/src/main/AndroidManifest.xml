@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="tfsapps.loveprice">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/bc_96x96"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/bc_128x128"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/bc_96x96"
+        android:roundIcon="@drawable/bc_128x128"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LovePrice">
+        android:theme="@style/Theme.LovePrice"
+        tools:targetApi="31">
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4924620089567925~5143329599" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -6,7 +6,7 @@
     <string name="ttl_quantity">　数量(例:個,箱,枚)</string>
     <string name="ttl_price">　価格</string>
     <string name="ttl_point">　ポイント</string>
-    <string name="ttl_point_2">(10ポイントの場合は[10]を入力)</string>
+    <string name="ttl_point_2">5ﾎﾟｲﾝﾄの場合は[5]を入力</string>
     <string name="ttl_dis_rate">割引 %</string>
     <string name="ttl_dis_amount">-円</string>
     <string name="btn_cal">計算</string>

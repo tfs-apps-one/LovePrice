@@ -46,6 +46,8 @@ import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 public class MainActivity extends AppCompatActivity {
     private TextView text_item_A;
@@ -98,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 広告
     private AdView mAdview;
+    public RewardedAd rewardedAd;
+
     private LinearLayout admobLayout;
     private boolean visibleAd = true;
     private boolean isKeyboardVisible = false;
@@ -108,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
     private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
     //テスト ID　
 //    private String adUnitID = "ca-app-pub-3940256099942544/6300978111";
-    // リワード広告
-    public LoadAdError adError;
-    public RewardedAd rewardedAd = null;
 //test_make
     // 本番ID
     private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     //自動計算
 //test_make
-    private int REWARD_AUTO_CAL = 69;
+    private int REWARD_AUTO_CAL = 63;
     private boolean auto_cal = false;
     private boolean invalid_cal = false;
 
@@ -278,12 +279,6 @@ public class MainActivity extends AppCompatActivity {
         CalResult();
 
         //広告
-        /*
-        mAdview = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdview.loadAd(adRequest);
-         */
-
         MobileAds.initialize(this);
         mAdview = new AdView(this);
         mAdview.setAdUnitId(adUnitID);
