@@ -20,6 +20,7 @@ import android.graphics.Typeface;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -34,9 +35,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 //　広告
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
@@ -49,7 +56,16 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-public class MainActivity extends AppCompatActivity {
+//サブスク
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+
+public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
     private TextView text_item_A;
     private TextView text_item_B;
     private TextView ttl_amount_A;
@@ -108,15 +124,20 @@ public class MainActivity extends AppCompatActivity {
     private View rootView;
     private int iniScreenHight = 0;
 //test_make
-    //本番 ID
+    //本番 ID　バナー
     private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
-    //テスト ID　
+    //テスト ID　バナー
 //    private String adUnitID = "ca-app-pub-3940256099942544/6300978111";
 //test_make
-    // 本番ID
+    // 本番ID 動画
     private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
-    //テストID
+    //テストID バナー
 //    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+
+    //サブスク
+    private BillingClient billingClient;
+    private static final String TAG = "tag-ad-free-MainActivity";
+    private static final String SUBSCRIPTION_ID = "ad_free_plan_xxxx"; //
 
     //自動計算
 //test_make
@@ -483,6 +504,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        //サブスク
+        //BillingClientを初期化
+        /* test_make
+        billingClient = BillingClient.newBuilder(this)
+                .setListener(this)
+                .enablePendingPurchases()
+                .build();
+
+        // Google Playへの接続
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    Log.d(TAG, "@@@@@@ Billing Client connected ");
+                    checkSubscriptionStatus();
+                } else {
+                    Log.e(TAG, "@@@@@@ Billing connection failed: " + billingResult.getDebugMessage());
+//                    Log.e(TAG, "Billing Client connection failed");
+                }
+            }
+
+            @Override
+            public void onBillingServiceDisconnected() {
+                Log.e(TAG, "@@@@@@ Billing Service disconnected");
+            }
+        });
+        */
     }
     @Override
     public void onPause(){
@@ -498,6 +547,11 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         AppDBUpdated(false); //DB保存
+        /*  test_make
+        if (billingClient != null){
+            billingClient.endConnection();
+        }
+         */
     }
 
     /* **************************************************
@@ -1640,8 +1694,9 @@ public class MainActivity extends AppCompatActivity {
     class TextWatcherExtend implements TextWatcher {
         private int max_keta;
         private int select_id;
+
         // コンストラクタ
-        public TextWatcherExtend(int editTextId,int max) {
+        public TextWatcherExtend(int editTextId, int max) {
             select_id = editTextId;
             max_keta = max;
         }
@@ -1661,36 +1716,42 @@ public class MainActivity extends AppCompatActivity {
             String inputStr = s.toString();
             String warnStr = "";
 
-            if (inputStr.length() > max_keta)
-            {
-                switch (max_keta)
-                {
-                    case 1: warnStr = "(1-9)";          break;
-                    case 2: warnStr = "(1-99)";         break;
-                    case 3: warnStr = "(1-999)";        break;
-                    case 4: warnStr = "(1-9999)";       break;
-                    case 5: warnStr = "(1-99999)";      break;
-                    case 6: warnStr = "(1-999999)";     break;
+            if (inputStr.length() > max_keta) {
+                switch (max_keta) {
+                    case 1:
+                        warnStr = "(1-9)";
+                        break;
+                    case 2:
+                        warnStr = "(1-99)";
+                        break;
+                    case 3:
+                        warnStr = "(1-999)";
+                        break;
+                    case 4:
+                        warnStr = "(1-9999)";
+                        break;
+                    case 5:
+                        warnStr = "(1-99999)";
+                        break;
+                    case 6:
+                        warnStr = "(1-999999)";
+                        break;
                 }
-                inp_chk_temp = (EditText)findViewById(select_id);
+                inp_chk_temp = (EditText) findViewById(select_id);
                 inp_chk_temp.setText("");
                 if (_language.equals("ja")) {
                     ad.setTitle("桁数オーバー");
                     ad.setMessage("\n\n\nもう一度入力して下さい\n" + warnStr + "\n\n\n");
                     ad.setPositiveButton("ＯＫ", null);
-                }
-                else if (_language.equals("zh")) {
+                } else if (_language.equals("zh")) {
                     ad.setTitle("超過位數");
                     ad.setMessage("\n\n\n請重新輸入\n" + warnStr + "\n\n\n");
                     ad.setPositiveButton("ＯＫ", null);
-                }
-                else if (_language.equals("ko")) {
+                } else if (_language.equals("ko")) {
                     ad.setTitle("자릿수 오버");
                     ad.setMessage("\n\n\n다시 입력 해주세요\n" + warnStr + "\n\n\n");
                     ad.setPositiveButton("ＯＫ", null);
-                }
-                else
-                {
+                } else {
                     ad.setTitle("Number of digits exceeded");
                     ad.setMessage("\n\n\nPlease re-enter\n" + warnStr + "\n\n\n");
                     ad.setPositiveButton("OK", null);
@@ -1701,4 +1762,42 @@ public class MainActivity extends AppCompatActivity {
             Auto_Cal();
         }
     }
+
+    /*-----------------------------------------------------------------
+        サブスク処理
+     -----------------------------------------------------------------*/
+    /*test_make*/
+    private void checkSubscriptionStatus(){
+        billingClient.queryPurchasesAsync(
+                QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
+                (billingResult, purchasesList) -> {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchasesList != null){
+                        boolean isSubscribed = false;
+                        for (Purchase purchase : purchasesList) {
+                            if (purchase.getProducts().contains(SUBSCRIPTION_ID)) {
+                                isSubscribed = true;
+                                break;
+                            }
+                        }
+                        if (isSubscribed){
+                            Log.e(TAG, "@@@@@@ サブスク有効");
+                            AdViewActive(false);
+                        }
+                        else{
+                            Log.e(TAG, "@@@@@@ サブスク無効");
+                            AdViewActive(true);
+                        }
+                    }
+                    else{
+                        Log.e(TAG, "@@@@@@ サブスク有効／無効情報の取得エラー");
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void onPurchasesUpdated(BillingResult billingResult, List<Purchase>purchases){
+
+    }
+
 }
