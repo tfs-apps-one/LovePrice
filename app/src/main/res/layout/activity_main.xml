@@ -444,14 +444,14 @@
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout0">
 
             <Button
                 android:id="@+id/btn_cal"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="4"
                 android:background="@drawable/bak_btn_2"
                 android:onClick="onCalcurate"
@@ -464,20 +464,20 @@
             <Button
                 android:id="@+id/btn_detail"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:background="@drawable/bak_btn_1"
                 android:onClick="onAddFunc"
                 android:text="@string/btn_detail"
-                android:textColor="#666666"
-                android:textSize="20dp"
+                android:textColor="#EC5555"
+                android:textSize="17dp"
                 android:textStyle="bold"
                 app:backgroundTint="@null" />
 
             <Button
                 android:id="@+id/btn_save"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:background="@drawable/bak_btn_3"
                 android:onClick="onSave"
@@ -490,7 +490,7 @@
             <Button
                 android:id="@+id/btn_reset"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:background="@drawable/bak_btn_1"
                 android:onClick="onReset"

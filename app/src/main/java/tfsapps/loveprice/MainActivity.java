@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.app.AlertDialog;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private RadioButton rbtn_dis_per_B;
     private RadioButton rbtn_dis_pri_B;
 
+    private Button CalBtn;
+
     private double unit_A = 0;
     private double unit_B = 0;
     private int point_pri_A = 0;
@@ -135,13 +139,15 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 //    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 
     //サブスク
+    private boolean isPremium = false;
     private BillingClient billingClient;
     private static final String TAG = "tag-ad-free-MainActivity";
-    private static final String SUBSCRIPTION_ID = "ad_free_plan_xxxx"; //
+    private static final String SUBSCRIPTION_ID = "ad_premium_plan"; //
 
     //自動計算
 //test_make
-    private int REWARD_AUTO_CAL = 63;
+    private int REWARD_AUTO_CAL = 49;
+//  private int REWARD_AUTO_CAL = 63;
     private boolean auto_cal = false;
     private boolean invalid_cal = false;
 
@@ -288,6 +294,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         ttl_point_A = (TextView) findViewById(R.id.ttl_point_A);
         ttl_point_B = (TextView) findViewById(R.id.ttl_point_B);
 
+        CalBtn = (Button)findViewById(R.id.btn_cal);
+
         tax_flag_A = 0; //税抜き
         tax_flag_B = 0; //税抜き
 
@@ -342,6 +350,12 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     * */
     public void AdViewActive(boolean flag){
         //if (!visibleAd) {
+        if (isPremium){
+            mAdview.setVisibility(AdView.GONE);
+            admobLayout.removeView(mAdview);
+            return; //最後に追加 test_make
+        }
+
         if (flag != visibleAd){
             visibleAd = flag;
         }
@@ -507,7 +521,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         //サブスク
         //BillingClientを初期化
-        /* test_make
         billingClient = BillingClient.newBuilder(this)
                 .setListener(this)
                 .enablePendingPurchases()
@@ -531,7 +544,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 Log.e(TAG, "@@@@@@ Billing Service disconnected");
             }
         });
-        */
     }
     @Override
     public void onPause(){
@@ -547,11 +559,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     public void onDestroy(){
         super.onDestroy();
         AppDBUpdated(false); //DB保存
-        /*  test_make
         if (billingClient != null){
             billingClient.endConnection();
         }
-         */
     }
 
     /* **************************************************
@@ -878,7 +888,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
     /* 記憶ボタン */
     public void onSave(View view) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("〜 短縮入力 機能 〜");
         builder.setMessage("\n\n短縮入力とは「税率、容量、数量、価格、ポイント、割引」を保存&読込する事が可能です。日常的に使用する条件を保存すると便利です。\n\n操作に応じてボタンを選択して下さい。\n\n\n\n [戻る] 短縮入力画面を閉じる\n [読込] 保存した値を読み込む\n [保存] 入力した値を保存する\n\n\n");
@@ -1003,8 +1012,51 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    public void FuncSubScription(){
+        Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
+        startActivity(intent);
+    }
+
     /* 便利ボタン */
-    public void onAddFunc(View view){
+    public void onAddFunc(View view) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("便利メニュー");
+        builder.setMessage("\n\n【自動計算】\n「計算」をタップせずに自動的に計算します。\n\n\n\n【プレミアム】\n「広告の非表示」＋「自動計算」を常時有効にするプランとなります。\n\n\n\n\n\n");
+
+        builder.setPositiveButton("自動計算", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                //ダイアログ処理
+                FuncConvenience();
+            }
+        });
+
+        builder.setNegativeButton("プレミアム", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                FuncSubScription();
+            }
+        });
+
+        builder.setNeutralButton("戻る", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                /*
+                 *   処理なし（戻るだけ）
+                 * */
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    public void FuncConvenience(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("〜 便利　自動計算[ON] 〜");
@@ -1039,21 +1091,28 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         dialog.show();
 
         /* ソフトキーボードを隠す */
-        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     /* 自動計算　督促表示 */
     public void RewardRecommend(){
+
+        if (isPremium){ //プレミアム会員は不要
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("〜 便利　自動計算[OFF] 〜");
         builder.setMessage("" +
                 "\n\n「自動計算」が無効となりました。" +
-                "\n\n広告動画を視聴して「自動計算」を有効にしますか？" +
+                "\n\n[広告動画]を視聴して 自動計算 を有効にしますか？" +
+                "\n" +
+                "\n\n[プレミアムプラン]で 自動計算 を常時有効にしますか？" +
                 "\n\n" +
-                "\n\n" +
-                "\n\n [戻る] 今は視聴しない" +
-                "\n [視聴] 広告動画を視聴する" +
+                "\n\n [  戻る  ]　今は視聴しない" +
+                "\n [ﾌﾟﾚﾐｱﾑ]　プランの内容を確認する" +
+                "\n [  視聴  ]　広告動画を視聴する" +
                 "\n");
 
         builder.setPositiveButton("視聴", new DialogInterface.OnClickListener() {
@@ -1063,6 +1122,14 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 //ダイアログ処理
                 //test_make
                 RdShow();
+            }
+        });
+
+        builder.setNegativeButton("プレミアム", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                FuncSubScription();
             }
         });
 
@@ -1099,7 +1166,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
 
         //自動計算可否判断
-        if (db_data1 > 0){
+        if (db_data1 > 0 || isPremium == true){
             auto_cal = true;
         }
         else{
@@ -1170,8 +1237,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     }
 
     public void CalBtnDisp(){
-        Button btn_cal = findViewById(R.id.btn_cal);
-
         //自動計算可否判断
         if (db_data1 > 0){
             auto_cal = true;
@@ -1180,15 +1245,35 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             auto_cal = false;
         }
 
-        btn_cal.setBackgroundTintList(null);
-        if (auto_cal){
-            btn_cal.setBackgroundResource(R.drawable.bak_btn_4);
-            btn_cal.setText("自動");
+        if (isPremium){
+            auto_cal = true;
         }
-        else{
-            btn_cal.setBackgroundResource(R.drawable.bak_btn_2);
-            btn_cal.setText("計算");
-        }
+
+        runOnUiThread(() -> {
+            CalBtn.setBackgroundTintList(null);
+            if (auto_cal) {
+                CalBtn.setBackgroundResource(R.drawable.bak_btn_4);
+                CalBtn.setText("自動");
+            } else {
+                CalBtn.setBackgroundResource(R.drawable.bak_btn_2);
+                CalBtn.setText("計算");
+            }
+            CalBtn.invalidate();
+
+/*
+            Button btn_cal = findViewById(R.id.btn_cal);
+            btn_cal.setBackgroundTintList(null);
+            if (auto_cal) {
+                btn_cal.setBackgroundResource(R.drawable.bak_btn_4);
+                btn_cal.setText("自動");
+            } else {
+                btn_cal.setBackgroundResource(R.drawable.bak_btn_2);
+                btn_cal.setText("計算");
+            }
+            btn_cal.invalidate();
+
+ */
+        });
     }
 
     /* 結果 */
@@ -1766,7 +1851,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     /*-----------------------------------------------------------------
         サブスク処理
      -----------------------------------------------------------------*/
-    /*test_make*/
+
     private void checkSubscriptionStatus(){
         billingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
@@ -1781,11 +1866,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                         }
                         if (isSubscribed){
                             Log.e(TAG, "@@@@@@ サブスク有効");
-                            AdViewActive(false);
+                            isPremium = true;
                         }
                         else{
                             Log.e(TAG, "@@@@@@ サブスク無効");
-                            AdViewActive(true);
+                            isPremium = false;
                         }
                     }
                     else{
@@ -1793,6 +1878,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                     }
                 }
         );
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            CalBtnDisp();
+        }, 100); // 100ミリ秒後に更新を反映
     }
 
     @Override
