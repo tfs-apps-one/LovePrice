@@ -503,6 +503,61 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/linearLayout5_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/img_trash"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:src="@drawable/trash"
+                    android:background="@null"
+                    android:padding="4dp"
+                    android:onClick="onTrash"
+                    android:scaleType="fitCenter"
+                    android:gravity="center|center"
+                    />
+
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="10"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="5dp"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="ca-app-pub-4924620089567925/8148766886">
+
+                <!--
+                    本番広告
+                    ads:adUnitId="ca-app-pub-4924620089567925/8148766886">
+
+                    テスト広告
+                    ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+                    -->
+                </com.google.android.gms.ads.AdView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+        <LinearLayout
             android:id="@+id/adView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -511,6 +566,6 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         </LinearLayout>
-
+        -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

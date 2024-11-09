@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import android.widget.RadioButton;
@@ -119,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private boolean calcurate_done = false;
 
     // 広告
+    private ImageButton imgTrash;
+    private boolean visibleTrash = true;
+
     private AdView mAdview;
     public RewardedAd rewardedAd;
 
@@ -129,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private int iniScreenHight = 0;
 //test_make
     //本番 ID　バナー
-    private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
+//    private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
     //テスト ID　バナー
 //    private String adUnitID = "ca-app-pub-3940256099942544/6300978111";
 //test_make
@@ -309,13 +313,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         //広告
         MobileAds.initialize(this);
-        mAdview = new AdView(this);
-        mAdview.setAdUnitId(adUnitID);
-        mAdview.setAdSize(AdSize.BANNER);
-        admobLayout = findViewById(R.id.adView);
-        admobLayout.addView(mAdview);
+        mAdview = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdview.loadAd(adRequest);
+
+        imgTrash = findViewById(R.id.img_trash);
 
         //動画リワード
         loadRewardedAd();
@@ -337,9 +339,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 }
                 if (iniScreenHight > screenHeight) {
                     // ソフトキーボードが表示されている場合
+                    TrashActive(false);
                     AdViewActive(false);
                 } else {
                     // ソフトキーボードが非表示の場合
+                    TrashActive(true);
                     AdViewActive(true);
                 }
             }
@@ -352,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         //if (!visibleAd) {
         if (isPremium){
             mAdview.setVisibility(AdView.GONE);
-            admobLayout.removeView(mAdview);
+            mAdview.requestLayout();
             return; //最後に追加 test_make
         }
 
@@ -364,14 +368,36 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
         if (visibleAd){
             // admob 表示
-            admobLayout.addView(mAdview);
-            admobLayout.setVisibility(LinearLayout.VISIBLE);
             mAdview.setVisibility(AdView.VISIBLE);
+            mAdview.requestLayout();
+
         } else {
             // admob 非表示
             mAdview.setVisibility(AdView.GONE);
-            admobLayout.removeView(mAdview);
+            mAdview.requestLayout();
         }
+    }
+    public void TrashActive(boolean flag){
+        if (isPremium){
+            imgTrash.setVisibility(View.GONE);
+            imgTrash.requestLayout();
+            return; //最後に追加 test_make
+        }
+
+        visibleTrash = flag;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!visibleTrash){
+                    imgTrash.setVisibility(View.GONE);
+                    imgTrash.requestLayout();
+                }
+                else{
+                    imgTrash.setVisibility(View.VISIBLE);
+                    imgTrash.requestLayout();
+                }
+            }
+        });
     }
 
     /************************
@@ -1015,6 +1041,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     public void FuncSubScription(){
         Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
         startActivity(intent);
+    }
+
+    public void onTrash(View v){
+        FuncSubScription();
     }
 
     /* 便利ボタン */
