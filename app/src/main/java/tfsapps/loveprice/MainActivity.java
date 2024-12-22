@@ -992,8 +992,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             }
         }
         else {
-            data_a = unit_A - point_pri_A;
-            data_b = unit_B - point_pri_B;
+//            data_a = unit_A - point_pri_A;
+//            data_b = unit_B - point_pri_B;
+            data_a = unit_A;
+            data_b = unit_B;
 
             if (_language.equals("ja")) {
 
@@ -1372,8 +1374,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             return;
         }
 
-        data_a = unit_A - point_pri_A;
-        data_b = unit_B - point_pri_B;
+//        data_a = unit_A - point_pri_A;
+//        data_b = unit_B - point_pri_B;
+        data_a = unit_A;
+        data_b = unit_B;
 
         if (data_a < data_b)
         {
@@ -1621,26 +1625,26 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 temp_b = pri_b - dis_b;
             }
         }
-        if (temp_a <= 0 || temp_b <= 0) {
-            return -2;
-        }
 
         //ポイント単価をやめる
         if (point_a > 0)
         {
-//            data = temp_a / point_a;
             data = point_a;
             if (data > 0)   point_pri_A = (int)data;
-            else            point_pri_A = 0;
+
+            if (point_pri_A > 0) temp_a = temp_a - point_pri_A;
         }
         if (point_b > 0)
         {
-//            data = temp_b / point_b;
             data = point_b;
             if (data > 0)   point_pri_B = (int)data;
-            else            point_pri_B = 0;
+
+            if (point_pri_B > 0) temp_b = temp_b - point_pri_B;
         }
 
+        if (temp_a <= 0 || temp_b <= 0) {
+            return -2;
+        }
 
         //１個当たりの金額
         if (temp_a <= 0 || temp_b <= 0) {
