@@ -50,9 +50,12 @@ import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
@@ -132,15 +135,25 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private View rootView;
     private int iniScreenHight = 0;
 //test_make
-    //本番 ID　バナー
+//    //本番 ID　バナー
 //    private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
-    //テスト ID　バナー
+//    //テスト ID　バナー
 //    private String adUnitID = "ca-app-pub-3940256099942544/6300978111";
+
 //test_make
+    //リワード動画
     // 本番ID 動画
     private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
     //テストID バナー
 //    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+
+//test_make
+    //インタースティシャル広告
+    private InterstitialAd mInterstitialAd;
+    //本番ID
+    private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
+    //テストID
+//    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
 
     //サブスク
     private boolean isPremium = false;
@@ -317,10 +330,13 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdview.loadAd(adRequest);
 
-        imgTrash = findViewById(R.id.img_trash);
+//        imgTrash = findViewById(R.id.img_trash);
 
         //動画リワード
         loadRewardedAd();
+
+        //インタースティシャル広告
+        loadInterstitialAd();
 
         /* 広告動的表示 */
         rootView = findViewById(android.R.id.content);
@@ -339,11 +355,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 }
                 if (iniScreenHight > screenHeight) {
                     // ソフトキーボードが表示されている場合
-                    TrashActive(false);
+//                    TrashActive(false);
                     AdViewActive(false);
                 } else {
                     // ソフトキーボードが非表示の場合
-                    TrashActive(true);
+//                    TrashActive(true);
                     AdViewActive(true);
                 }
             }
@@ -398,6 +414,53 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 }
             }
         });
+    }
+
+
+    /*******
+     * インタースティシャル広告をロード
+     ******/
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, AD_UNIT_ID, adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d("AdMob", "インタースティシャル広告がロードされました");
+
+                // 広告のコールバックを設定（閉じた後の動作）
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d("AdMob", "広告が閉じられました");
+                        mInterstitialAd = null; // 再ロードの準備
+                        loadInterstitialAd(); // 次の広告をロード
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
+                        Log.d("AdMob", "広告の表示に失敗しました: " + adError.getMessage());
+                        mInterstitialAd = null; // 再ロードの準備
+                    }
+                });
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.d("AdMob", "インタースティシャル広告のロードに失敗: " + loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
+        });
+    }
+    // インタースティシャル広告を表示
+    private void showInterstitialAd() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(this);
+        } else {
+            Log.d("AdMob", "インタースティシャル広告はまだロードされていません");
+            loadInterstitialAd(); // すぐに次の広告をロード
+        }
     }
 
     /************************
@@ -544,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     @Override
     public void onResume() {
         super.onResume();
-
+        /* サブスク機能を削除　　↓↓↓↓↓
         //サブスク
         //BillingClientを初期化
         billingClient = BillingClient.newBuilder(this)
@@ -570,6 +633,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 Log.e(TAG, "@@@@@@ Billing Service disconnected");
             }
         });
+
+         */
     }
     @Override
     public void onPause(){
@@ -585,8 +650,18 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     public void onDestroy(){
         super.onDestroy();
         AppDBUpdated(false); //DB保存
+        /* サブスク削除
         if (billingClient != null){
             billingClient.endConnection();
+        }
+         */
+        if (rewardedAd != null) {
+            rewardedAd.setFullScreenContentCallback(null); // コールバック解除
+            rewardedAd = null; // 明示的に解放
+        }
+        if (mInterstitialAd != null) {
+            mInterstitialAd.setFullScreenContentCallback(null); // コールバック解除
+            mInterstitialAd = null; // 明示的に解放
         }
     }
 
@@ -1052,6 +1127,9 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     /* 便利ボタン */
     public void onAddFunc(View view) {
 
+        FuncConvenience();
+
+        /* サブスク削除↓↓↓↓
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("便利メニュー");
         builder.setMessage("\n\n【自動計算】\n「計算」をタップせずに自動的に計算します。\n\n\n\n【プレミアム】\n「広告の非表示」＋「自動計算」を常時有効にするプランとなります。\n\n\n\n\n\n");
@@ -1077,9 +1155,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                /*
-                 *   処理なし（戻るだけ）
-                 * */
             }
         });
         AlertDialog dialog = builder.create();
@@ -1087,6 +1162,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
 
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+         */
     }
     public void FuncConvenience(){
 
@@ -1140,12 +1217,23 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 "\n\n「自動計算」が無効となりました。" +
                 "\n\n[広告動画]を視聴して 自動計算 を有効にしますか？" +
                 "\n" +
+                "\n\n" +
+                "\n\n [  戻る  ]　今は視聴しない" +
+                "\n [  視聴  ]　広告動画を視聴する" +
+                "\n");
+
+        /*
+        builder.setMessage("" +
+                "\n\n「自動計算」が無効となりました。" +
+                "\n\n[広告動画]を視聴して 自動計算 を有効にしますか？" +
+                "\n" +
                 "\n\n[プレミアムプラン]で 自動計算 を常時有効にしますか？" +
                 "\n\n" +
                 "\n\n [  戻る  ]　今は視聴しない" +
                 "\n [ﾌﾟﾚﾐｱﾑ]　プランの内容を確認する" +
                 "\n [  視聴  ]　広告動画を視聴する" +
                 "\n");
+         */
 
         builder.setPositiveButton("視聴", new DialogInterface.OnClickListener() {
             @Override
@@ -1157,6 +1245,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             }
         });
 
+        /*
         builder.setNegativeButton("プレミアム", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1164,6 +1253,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
                 FuncSubScription();
             }
         });
+        */
 
         builder.setNeutralButton("戻る", new DialogInterface.OnClickListener(){
             @Override
@@ -1210,6 +1300,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             if (pri_a > 0 && pri_b > 0){
                 PriceCalcurate();
                 db_data1--; //計算をしたのでデクリメント
+                if (db_data1 == (REWARD_AUTO_CAL/2)){
+                    //全面広告表示
+                    showInterstitialAd();
+                }
+
                 if (db_data1 <= 0){
                     db_data1 = 0;
                     RewardRecommend();
