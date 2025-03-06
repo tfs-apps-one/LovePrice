@@ -168,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private boolean auto_cal = false;
     private boolean invalid_cal = false;
 
+    private int CAL_MAX_TAP = 15;
+
     //評価ポップアップ
     private int ReviewCount = 1;
 //test_make
@@ -198,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private int db_dis_type_b = 0;  //DB
     private int db_data1 = 0;       //DB 自動計算フラグ
     private int db_data2 = 0;       //DB 評価ポップアップ
-    private int db_data3 = 0;       //DB
+    private int db_data3 = 0;       //DB 「計算」キータップ回数
     private int db_data4 = 0;       //DB
     private int db_data5 = 0;       //DB
     private int db_data6 = 0;       //DB
@@ -1300,6 +1302,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             if (pri_a > 0 && pri_b > 0){
                 PriceCalcurate();
                 db_data1--; //計算をしたのでデクリメント
+                if (db_data1 == (REWARD_AUTO_CAL/2)+5){
+                    Context context = getApplicationContext();
+                    Toast.makeText(context, "まもなく全面広告が表示されます....", Toast.LENGTH_SHORT).show();
+                }
                 if (db_data1 == (REWARD_AUTO_CAL/2)){
                     //全面広告表示
                     showInterstitialAd();
@@ -1774,6 +1780,21 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         /* ソフトキーボードを隠す */
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+        //全面広告処理
+        db_data3--;
+        if (db_data3 < 0){
+            db_data3 = CAL_MAX_TAP;
+        }
+        if (db_data3 == 1){
+            //全面広告表示
+            showInterstitialAd();
+        }
+        if (db_data3 == 4){
+            Context context = getApplicationContext();
+            Toast.makeText(context, "まもなく全面広告が表示されます....", Toast.LENGTH_SHORT).show();
+        }
+
     }
     public void PriceCalcurate()
 //    public void onCalcurate(View view)
