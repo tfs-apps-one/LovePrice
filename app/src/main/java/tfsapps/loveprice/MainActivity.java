@@ -425,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private void loadInterstitialAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, AD_UNIT_ID, adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, AD_INTER_UNIT_ID, adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 mInterstitialAd = interstitialAd;
