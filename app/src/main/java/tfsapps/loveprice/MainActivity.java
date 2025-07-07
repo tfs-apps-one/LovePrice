@@ -43,10 +43,6 @@ import java.util.List;
 import java.util.Locale;
 
 //　広告
-import com.android.billingclient.api.AcknowledgePurchaseParams;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.QueryPurchasesParams;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
@@ -63,15 +59,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 //サブスク
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-
-public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
+public class MainActivity extends AppCompatActivity {
+//public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
     private TextView text_item_A;
     private TextView text_item_B;
     private TextView ttl_amount_A;
@@ -154,12 +143,6 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
     //テストID
 //    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
-
-    //サブスク
-    private boolean isPremium = false;
-    private BillingClient billingClient;
-    private static final String TAG = "tag-ad-free-MainActivity";
-    private static final String SUBSCRIPTION_ID = "ad_premium_plan"; //
 
     //自動計算
 //test_make
@@ -372,11 +355,12 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     * */
     public void AdViewActive(boolean flag){
         //if (!visibleAd) {
+        /*
         if (isPremium){
             mAdview.setVisibility(AdView.GONE);
             mAdview.requestLayout();
             return; //最後に追加 test_make
-        }
+        }*/
 
         if (flag != visibleAd){
             visibleAd = flag;
@@ -396,11 +380,12 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
     }
     public void TrashActive(boolean flag){
+        /*
         if (isPremium){
             imgTrash.setVisibility(View.GONE);
             imgTrash.requestLayout();
             return; //最後に追加 test_make
-        }
+        }*/
 
         visibleTrash = flag;
         runOnUiThread(new Runnable() {
@@ -1116,14 +1101,16 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
-
+    /*
     public void FuncSubScription(){
         Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
         startActivity(intent);
-    }
+    }*/
 
     public void onTrash(View v){
+        /*
         FuncSubScription();
+         */
     }
 
     /* 便利ボタン */
@@ -1209,9 +1196,10 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     /* 自動計算　督促表示 */
     public void RewardRecommend(){
 
+        /*
         if (isPremium){ //プレミアム会員は不要
             return;
-        }
+        }*/
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("〜 便利　自動計算[OFF] 〜");
@@ -1290,7 +1278,8 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
         }
 
         //自動計算可否判断
-        if (db_data1 > 0 || isPremium == true){
+//        if (db_data1 > 0 || isPremium == true){
+        if (db_data1 > 0){
             auto_cal = true;
         }
         else{
@@ -1378,9 +1367,11 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
             auto_cal = false;
         }
 
+        /*
         if (isPremium){
             auto_cal = true;
         }
+         */
 
         runOnUiThread(() -> {
             CalBtn.setBackgroundTintList(null);
@@ -2001,7 +1992,7 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     /*-----------------------------------------------------------------
         サブスク処理
      -----------------------------------------------------------------*/
-
+/*
     private void checkSubscriptionStatus(){
         billingClient.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build(),
@@ -2037,5 +2028,5 @@ public class MainActivity extends AppCompatActivity implements PurchasesUpdatedL
     public void onPurchasesUpdated(BillingResult billingResult, List<Purchase>purchases){
 
     }
-
+*/
 }
