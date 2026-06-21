@@ -35,8 +35,9 @@
         </activity>
 
         <!-- ここに追加します -->
+        <!--
         <activity android:name=".SubscriptionActivity" />
-
+        -->
         <!-- AR一発入力モード -->
         <activity
             android:name=".ArCameraActivity"

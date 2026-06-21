@@ -335,15 +335,55 @@ public class ArCameraActivity extends AppCompatActivity
             }, SCAN_PAUSE_MS);
 
         } else {
-            // 商品Bの結果を保存して終了
+            // 商品Bの結果を保存
             mResultPriceB  = (mConfirmedPrice  != null) ? mConfirmedPrice  : -1;
             mResultVolumeB = (mConfirmedVolume != null) ? mConfirmedVolume : -1;
 
             Log.d(TAG, "Step B done: price=" + mResultPriceB + " volume=" + mResultVolumeB);
 
+            // ── 同一商品スキャンチェック ─────────────────────────────────────
+            // 商品Bの価格が商品Aとほぼ同じなら誤スキャンの可能性が高い
+            if (mResultPriceA > 0 && mResultPriceB > 0
+                    && isSimilarValue(mResultPriceB, mResultPriceA)) {
+                showSamePriceWarning();
+                return; // finishWithResult は呼ばない
+            }
+
             finishWithResult();
         }
     };
+
+    /**
+     * 商品Bが商品Aと同じ価格と判定された場合の警告。
+     * ヘッダーとフッターに警告を表示し、2.5秒後に自動で再スキャンする。
+     */
+    private void showSamePriceWarning() {
+        // ボタンを隠す（誤操作防止）
+        mNextBtn.setVisibility(android.view.View.GONE);
+        mRescanBtn.setVisibility(android.view.View.GONE);
+
+        // ヘッダーに警告メッセージ
+        mNavText.setText("⚠️ 同じ商品をスキャンしていませんか？");
+        mNavText.setTextColor(0xFFFF8C00); // ダークオレンジ
+
+        // フッターのステータスに詳細と自動再スキャン予告
+        mPriceStatus.setText("💴 商品Aと同じ価格が認識されました");
+        mPriceStatus.setTextColor(0xFFFF8C00);
+        mVolumeStatus.setText("📦 商品Bを改めて写してください");
+        mVolumeStatus.setTextColor(0xFFFFFFAA);
+
+        // ヒントテキストにカウントダウン表示
+        TextView hint = findViewById(R.id.ar_hint_text);
+        if (hint != null) hint.setText("2秒後に自動で再スキャンします...");
+
+        // 2.5秒後に自動再スキャン
+        mHandler.postDelayed(() -> {
+            if (mResultSent) return;
+            // ヘッダーを商品B用に戻してから再スキャン
+            mNavText.setTextColor(0xFFFFFFFF);
+            rescanCurrentStep();
+        }, 2500L);
+    }
 
     /** ステップ切り替え時に安定性カウンタと確定値をリセット */
     private void resetStepState() {
