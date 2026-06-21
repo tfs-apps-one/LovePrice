@@ -7,6 +7,7 @@
     <string name="ttl_price"> price</string>
     <string name="ttl_point"> point</string>
     <string name="ttl_point_2">(In case of 10 point, input "10")</string>
+    <string name="ttl_discount">discount</string>
     <string name="ttl_dis_rate">discount rate</string>
     <string name="ttl_dis_amount">discount amount</string>
     <string name="btn_cal">CAL.</string>

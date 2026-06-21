@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -34,6 +36,12 @@
 
         <!-- ここに追加します -->
         <activity android:name=".SubscriptionActivity" />
+
+        <!-- AR一発入力モード -->
+        <activity
+            android:name=".ArCameraActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
 
     </application>
 

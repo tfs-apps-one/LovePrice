@@ -1,6 +1,9 @@
 
 package tfsapps.loveprice;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,12 +40,16 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.content.SharedPreferences;
+import android.text.Html;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 //　広告
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
@@ -57,9 +64,13 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import android.util.DisplayMetrics;
 
 //サブスク
 public class MainActivity extends AppCompatActivity {
+
+    // ── AR一発入力モード ───────────────────────────────────────────────────────
+    private ActivityResultLauncher<Intent> mArLauncher;
 //public class MainActivity extends AppCompatActivity implements PurchasesUpdatedListener {
     private TextView text_item_A;
     private TextView text_item_B;
@@ -123,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isKeyboardVisible = false;
     private View rootView;
     private int iniScreenHight = 0;
+
+    // バナー広告リトライ用
+    private Handler adRetryHandler = new Handler(Looper.getMainLooper());
+    private int bannerRetryCount = 0;
+    private static final int MAX_RETRY_DELAY_MS = 60000; // 最大リトライ間隆94秒
+    private boolean isMobileAdsInitialized = false;
 //test_make
 //    //本番 ID　バナー
 //    private String adUnitID = "ca-app-pub-4924620089567925/8148766886";
@@ -132,17 +149,17 @@ public class MainActivity extends AppCompatActivity {
 //test_make
     //リワード動画
     // 本番ID 動画
-    private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
+//    private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
     //テストID バナー
-//    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 
 //test_make
     //インタースティシャル広告
     private InterstitialAd mInterstitialAd;
     //本番ID
-    private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
+//    private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
     //テストID
-//    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
 
     //自動計算
 //test_make
@@ -196,6 +213,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // AR一発入力 — ActivityResultLauncher を onCreate で登録（必須）
+        mArLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                this::onArResult);
 
         ad = new AlertDialog.Builder(this);
 
@@ -310,10 +332,16 @@ public class MainActivity extends AppCompatActivity {
         CalResult();
 
         //広告
-        MobileAds.initialize(this);
         mAdview = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdview.loadAd(adRequest);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                Log.d("AdMob_Banner", "MobileAds初期化完了");
+                isMobileAdsInitialized = true;
+                // バナー広告をロード（adSizeはXMLで設定済み）
+                loadBannerAd();
+            }
+        });
 
 //        imgTrash = findViewById(R.id.img_trash);
 
@@ -378,6 +406,67 @@ public class MainActivity extends AppCompatActivity {
             mAdview.setVisibility(AdView.GONE);
             mAdview.requestLayout();
         }
+    }
+
+    /*******
+     * 画面幅に合わせたAdaptive Bannerサイズを取得
+     ******/
+    private AdSize getAdSize() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float adWidthPixels = displayMetrics.widthPixels;
+        float density = displayMetrics.density;
+        int adWidth = (int) (adWidthPixels / density);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
+
+    /*******
+     * バナー広告をロード（AdListener付き・失敗時リトライ）
+     ******/
+    private void loadBannerAd() {
+        if (mAdview == null) return;
+
+        mAdview.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                Log.d("AdMob_Banner", "バナー広告ロード成功");
+                bannerRetryCount = 0; // 成功時はリトライカウントをリセット
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.d("AdMob_Banner", "バナー広告ロード失敗: " + loadAdError.getMessage()
+                        + " (code:" + loadAdError.getCode() + ")");
+                // 指数バックオフでリトライ
+                int delayMs = (int) Math.min(
+                        Math.pow(2, bannerRetryCount) * 1000,
+                        MAX_RETRY_DELAY_MS
+                );
+                bannerRetryCount++;
+                Log.d("AdMob_Banner", delayMs + "ms後にリトライ (試行:" + bannerRetryCount + ")");
+                adRetryHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mAdview != null) {
+                            AdRequest adRequest = new AdRequest.Builder().build();
+                            mAdview.loadAd(adRequest);
+                        }
+                    }
+                }, delayMs);
+            }
+
+            @Override
+            public void onAdOpened() {
+                Log.d("AdMob_Banner", "バナー広告がクリックされました");
+            }
+
+            @Override
+            public void onAdClosed() {
+                Log.d("AdMob_Banner", "バナー広告が閉じられました");
+            }
+        });
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdview.loadAd(adRequest);
     }
     public void TrashActive(boolean flag){
         /*
@@ -594,6 +683,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        // バナー広告を再開・再ロード
+        if (mAdview != null) {
+            mAdview.resume();
+            if (isMobileAdsInitialized) {
+                loadBannerAd();
+            }
+        }
         /* サブスク機能を削除　　↓↓↓↓↓
         //サブスク
         //BillingClientを初期化
@@ -625,6 +721,10 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onPause(){
+        // バナー広告を一時停止
+        if (mAdview != null) {
+            mAdview.pause();
+        }
         super.onPause();
         AppDBUpdated(false); //DB保存
     }
@@ -635,6 +735,13 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onDestroy(){
+        // バナー広告のリトライタイマーをキャンセルしリソース解放
+        if (adRetryHandler != null) {
+            adRetryHandler.removeCallbacksAndMessages(null);
+        }
+        if (mAdview != null) {
+            mAdview.destroy();
+        }
         super.onDestroy();
         AppDBUpdated(false); //DB保存
         /* サブスク削除
@@ -1986,6 +2093,145 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Auto_Cal();
+        }
+    }
+
+    // ── AR一発入力モード ───────────────────────────────────────────────────────
+
+    private static final String PREF_NAME        = "love_price_prefs";
+    private static final String PREF_AR_COUNT    = "ar_use_count";
+    private static final int    AR_FREE_LIMIT    = 5;   // 無料使用回数
+
+    /**
+     * 「📷AR入力」ボタンタップ。
+     * 5回使用ごとにリワード広告を視聴しないと使えない。
+     */
+    public void onArMode(View view) {
+        /* ソフトキーボードを隠す */
+        InputMethodManager imm =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        int count = prefs.getInt(PREF_AR_COUNT, 0);
+
+        if (count >= AR_FREE_LIMIT) {
+            // 5回使用済み → リワード広告を要求
+            showArRewardDialog(view);
+        } else {
+            // まだ無料枠あり → カウントアップして起動
+            prefs.edit().putInt(PREF_AR_COUNT, count + 1).apply();
+            launchArCamera();
+        }
+    }
+
+    /** リワード広告視聴をお願いするダイアログ */
+    private void showArRewardDialog(final View triggerView) {
+        new AlertDialog.Builder(this)
+                .setTitle("📷 AR入力について")
+                .setMessage("AR入力は" + AR_FREE_LIMIT + "回ごとに短い動画広告をご覧いただく必要があります。\n\n"
+                        + "動画を見てAR入力を続けますか？")
+                .setPositiveButton("動画を見る", (dialog, which) -> {
+                    if (rewardedAd != null) {
+                        rewardedAd.show(MainActivity.this, rewardItem -> {
+                            // 報酬取得 → カウントリセット＆AR起動
+                            getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                                    .edit().putInt(PREF_AR_COUNT, 1).apply();
+                            loadRewardedAd(); // 次回用にプリロード
+                            launchArCamera();
+                        });
+                    } else {
+                        // 広告未準備の場合はそのまま使わせる
+                        Toast.makeText(this, "広告を読み込み中です。しばらく後に再度お試しください",
+                                Toast.LENGTH_SHORT).show();
+                        loadRewardedAd();
+                    }
+                })
+                .setNegativeButton("キャンセル", null)
+                .show();
+    }
+
+    /** ArCameraActivity を実際に起動する共通処理 */
+    private void launchArCamera() {
+        Intent intent = new Intent(this, ArCameraActivity.class);
+        mArLauncher.launch(intent);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * 「？」ボタンタップ → アプリの使い方ダイアログを表示。
+     */
+    public void onHelpDialog(View view) {
+        String helpText =
+            "<b>📱 基本的な使い方</b><br>" +
+            "① 商品Aと商品Bの容量・数量・価格を入力<br>" +
+            "② 「計算」ボタンをタップ<br>" +
+            "③ どちらがお得か結果が表示されます<br><br>" +
+
+            "<b>📷 AR入力</b><br>" +
+            "カメラで値札を読み取って自動入力。<br>" +
+            "まず商品Aの値札を写し「確定」→ 商品Bの値札を写し「確定」<br>" +
+            "※ 5回ごとに短い動画広告をご覧いただきます<br><br>" +
+
+            "<b>💯 割引の入力例</b><br>" +
+            "「10%引き」→ 割引%を選択、割引欄に [10] を入力<br>" +
+            "「50円引き」→ -円を選択、割引欄に [50] を入力<br><br>" +
+
+            "<b>⭐ ポイントの入力例</b><br>" +
+            "「10ポイント付与」→ ポイント欄に [10] を入力<br>" +
+            "ポイントは1pt＝1円換算で計算されます<br><br>" +
+
+            "<b>🔘 各ボタンの説明</b><br>" +
+            "・<b>計算</b>：入力した条件でお得度を計算<br>" +
+            "・<b>AR入力</b>：カメラで値札を自動読み取り<br>" +
+            "・<b>便利+</b>：詳細な計算条件を表示<br>" +
+            "・<b>短縮</b>：前回の入力内容を呼び出す<br>" +
+            "・<b>リセット</b>：入力内容をすべてクリア<br><br>" +
+
+            "<b>💡 消費税について</b><br>" +
+            "税8%・10%を選択すると税込計算を行います<br>" +
+            "選択なしの場合は入力価格をそのまま比較します";
+
+        new AlertDialog.Builder(this)
+                .setTitle("📖 使い方ガイド")
+                .setMessage(Html.fromHtml(helpText, Html.FROM_HTML_MODE_COMPACT))
+                .setPositiveButton("閉じる", null)
+                .show();
+    }
+
+    /**
+     * ArCameraActivity から返ってきた結果を処理する。
+     * 取得できた値を対応するEditTextにセットし、計算を実行する。
+     */
+    private void onArResult(@NonNull ActivityResult result) {
+        if (result.getResultCode() != RESULT_OK || result.getData() == null) {
+            return; // キャンセル or エラー
+        }
+
+        Intent data = result.getData();
+        int priceA  = data.getIntExtra(ArCameraActivity.EXTRA_PRICE_A,  -1);
+        int volumeA = data.getIntExtra(ArCameraActivity.EXTRA_VOLUME_A, -1);
+        int priceB  = data.getIntExtra(ArCameraActivity.EXTRA_PRICE_B,  -1);
+        int volumeB = data.getIntExtra(ArCameraActivity.EXTRA_VOLUME_B, -1);
+
+        Log.d("MainActivity", "AR Result: A(" + priceA + "," + volumeA
+                + ") B(" + priceB + "," + volumeB + ")");
+
+        // 取得できた値だけをセット（-1 = 未取得は空欄のまま）
+        if (priceA  > 0) inp_pri_A.setText(String.valueOf(priceA));
+        if (volumeA > 0) inp_amount_A.setText(String.valueOf(volumeA));
+        if (priceB  > 0) inp_pri_B.setText(String.valueOf(priceB));
+        if (volumeB > 0) inp_amount_B.setText(String.valueOf(volumeB));
+
+        // 両商品の金額が揃っていれば自動計算
+        if (priceA > 0 && priceB > 0) {
+            PriceCalcurate();
+            Toast.makeText(this, "AR入力完了！自動計算しました", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "AR入力完了。未取得の項目を手動入力してください",
+                    Toast.LENGTH_LONG).show();
         }
     }
 

@@ -7,6 +7,7 @@
     <string name="ttl_price">　가격</string>
     <string name="ttl_point">　포인트</string>
     <string name="ttl_point_2">(10 점의 경우 [10]를 입력)</string>
+    <string name="ttl_discount">할인</string>
     <string name="ttl_dis_rate">할인율 (%)</string>
     <string name="ttl_dis_amount">할인 금액</string>
     <string name="btn_cal">계산</string>

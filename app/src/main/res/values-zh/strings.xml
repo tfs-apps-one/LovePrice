@@ -7,6 +7,7 @@
     <string name="ttl_price">　價格</string>
     <string name="ttl_point">　點</string>
     <string name="ttl_point_2">（輸入[10] 10分）</string>
+    <string name="ttl_discount">折扣</string>
     <string name="ttl_dis_rate">折扣率(％)</string>
     <string name="ttl_dis_amount">折扣金額</string>
     <string name="btn_cal">計算</string>
