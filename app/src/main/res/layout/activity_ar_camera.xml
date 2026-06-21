@@ -71,6 +71,41 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+    <!-- 準備中オーバーレイ（STEP A確定 → B開始の1.5秒スキャン停止期間） -->
+    <LinearLayout
+        android:id="@+id/ar_ready_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="#CC000000"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✅ 商品Aを確定しました"
+            android:textColor="#00E676"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:paddingBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商品Bの準備をしてください..."
+            android:textColor="#EEEEEE"
+            android:textSize="18sp" />
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#FFFFFF" />
+
+    </LinearLayout>
+
     <!-- フッター + アクションボタンをまとめた下部エリア -->
     <LinearLayout
         android:layout_width="match_parent"

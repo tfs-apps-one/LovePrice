@@ -80,6 +80,12 @@ public class ArCameraActivity extends AppCompatActivity
      */
     private static final long AUTO_ADVANCE_DELAY_MS = 800L;
 
+    /**
+     * STEP A確定後、スキャンを一時停止する時間(ms)。
+     * この間 onDetected は無視され、オーバーレイが表示される。
+     */
+    private static final long SCAN_PAUSE_MS = 1500L;
+
     // ── Views ─────────────────────────────────────────────────────────────────
     private PreviewView  mPreviewView;
     private ArOverlayView mOverlayView;
@@ -90,6 +96,7 @@ public class ArCameraActivity extends AppCompatActivity
     private Button       mCloseBtn;
     private Button       mNextBtn;
     private Button       mRescanBtn;
+    private android.view.View mReadyOverlay;
 
     // ── CameraX ───────────────────────────────────────────────────────────────
     private ExecutorService  mCameraExecutor;
@@ -98,7 +105,8 @@ public class ArCameraActivity extends AppCompatActivity
 
     // ── スキャン状態 ──────────────────────────────────────────────────────────
     private volatile int mStep = STEP_A;
-    private boolean      mResultSent = false; // finishResultを1度だけ呼ぶガード
+    private boolean      mResultSent = false;   // finishResultを1度だけ呼ぶガード
+    private volatile boolean mScanningPaused = false; // STEP切替中スキャン一時停止フラグ
 
     // 安定性カウンタ（ステップごとにリセット）
     private Integer mLastPrice  = null;
@@ -131,9 +139,10 @@ public class ArCameraActivity extends AppCompatActivity
         mNavText      = findViewById(R.id.ar_nav_text);
         mPriceStatus  = findViewById(R.id.ar_price_status);
         mVolumeStatus = findViewById(R.id.ar_volume_status);
-        mCloseBtn  = findViewById(R.id.ar_close_btn);
-        mNextBtn   = findViewById(R.id.ar_next_btn);
-        mRescanBtn = findViewById(R.id.ar_rescan_btn);
+        mCloseBtn     = findViewById(R.id.ar_close_btn);
+        mNextBtn      = findViewById(R.id.ar_next_btn);
+        mRescanBtn    = findViewById(R.id.ar_rescan_btn);
+        mReadyOverlay = findViewById(R.id.ar_ready_overlay);
 
         mCameraExecutor = Executors.newSingleThreadExecutor();
 
@@ -229,7 +238,8 @@ public class ArCameraActivity extends AppCompatActivity
                            List<PriceArAnalyzer.DetectedBox> boxes,
                            int imageWidth, int imageHeight, int rotationDegrees) {
 
-        if (mResultSent) return; // 既に結果を返した後は何もしない
+        if (mResultSent) return;     // 既に結果を返した後は何もしない
+        if (mScanningPaused) return; // STEP切替の準備中はスキャン結果を無視
 
         // AR オーバーレイ更新（UIスレッドへ）
         runOnUiThread(() ->
@@ -308,10 +318,21 @@ public class ArCameraActivity extends AppCompatActivity
 
             Log.d(TAG, "Step A done: price=" + mResultPriceA + " volume=" + mResultVolumeA);
 
-            // ステップBへリセット
-            mStep = STEP_B;
-            resetStepState();
-            updateUI();
+            // ── 1.5秒間スキャン停止 → オーバーレイ表示 ──────────────────────
+            mScanningPaused = true;
+            mNextBtn.setVisibility(android.view.View.GONE);
+            mRescanBtn.setVisibility(android.view.View.GONE);
+            mReadyOverlay.setVisibility(android.view.View.VISIBLE);
+
+            mHandler.postDelayed(() -> {
+                if (mResultSent) return;
+                // オーバーレイ非表示 → ステップBへ移行
+                mReadyOverlay.setVisibility(android.view.View.GONE);
+                mStep = STEP_B;
+                mScanningPaused = false; // スキャン再開
+                resetStepState();
+                updateUI();
+            }, SCAN_PAUSE_MS);
 
         } else {
             // 商品Bの結果を保存して終了

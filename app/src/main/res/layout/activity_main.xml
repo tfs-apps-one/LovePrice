@@ -6,19 +6,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#F0F4F8">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <!-- ステータス表示（上部） -->
+        <!-- ステータス表示（上部カード） -->
         <LinearLayout
             android:id="@+id/linearLayout4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bak_status"
+            android:background="#FFFFFF"
+            android:elevation="2dp"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +33,7 @@
                 android:gravity="center"
                 android:text="　status-1　"
                 android:textSize="17dp"
+                android:textColor="#1E293B"
                 android:focusable="true"
                 android:focusableInTouchMode="true" />
 
@@ -40,20 +43,22 @@
                 android:layout_height="30dp"
                 android:gravity="center"
                 android:text="　status-2　"
-                android:textSize="17dp" />
+                android:textSize="17dp"
+                android:textColor="#64748B" />
 
         </LinearLayout>
 
         <!-- ═══════════════════════════════════════════════════════
-             3列入力エリア
+             3列入力エリア（カード風）
              列構成: [商品A (weight=5)] | [中央タイトル (weight=2)] | [商品B (weight=5)]
-             行は全列で同じ高さ + 1dp区切り線で揃える
              ═══════════════════════════════════════════════════════ -->
         <LinearLayout
             android:id="@+id/linearLayout0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:orientation="horizontal"
+            android:elevation="1dp"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -67,46 +72,48 @@
                 android:background="@drawable/bak_status"
                 android:orientation="vertical">
 
-                <!-- 行1: 商品Aラベル (38dp) -->
+                <!-- 行1: 商品Aラベル -->
                 <TextView
                     android:id="@+id/item_A"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:gravity="center_vertical"
-                    android:paddingStart="6dp"
+                    android:paddingStart="8dp"
                     android:text="@string/item_A"
-                    android:textSize="16dp" />
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:textColor="#2563EB" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行2: 税率RadioGroup (38dp) -->
+                <!-- 行2: 税率 -->
                 <RadioGroup
                     android:id="@+id/RadioGroupTax_A"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:orientation="horizontal">
-
                     <RadioButton
                         android:id="@+id/rbtn_tax8_A"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_tax8_A"
                         android:text="@string/ttl_rbtn_tax8"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
-
                     <RadioButton
                         android:id="@+id/rbtn_tax10_A"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_tax10_A"
                         android:text="@string/ttl_rbtn_tax10"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
                 </RadioGroup>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行3: 容量入力 (50dp) -->
+                <!-- 行3: 容量 -->
                 <EditText
                     android:id="@+id/inp_amount_A"
                     android:layout_width="match_parent"
@@ -114,12 +121,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行4: 数量入力 (50dp) -->
+                <!-- 行4: 数量 -->
                 <EditText
                     android:id="@+id/inp_set_A"
                     android:layout_width="match_parent"
@@ -127,12 +137,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行5: 価格入力 (50dp) -->
+                <!-- 行5: 価格 -->
                 <EditText
                     android:id="@+id/inp_pri_A"
                     android:layout_width="match_parent"
@@ -140,12 +153,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行6: ポイント入力 (50dp) -->
+                <!-- 行6: ポイント -->
                 <EditText
                     android:id="@+id/inp_point_A"
                     android:layout_width="match_parent"
@@ -153,39 +169,42 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行7: 割引種類RadioGroup (38dp) -->
+                <!-- 行7: 割引種類 -->
                 <RadioGroup
                     android:id="@+id/RadioGroupDiscount_A"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:orientation="horizontal">
-
                     <RadioButton
                         android:id="@+id/rbtn_dis_per_A"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_discount_percent_A"
                         android:text="@string/ttl_dis_rate"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
-
                     <RadioButton
                         android:id="@+id/rbtn_dis_pri_A"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_discount_price_A"
                         android:text="@string/ttl_dis_amount"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
                 </RadioGroup>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行8: 割引額入力 (50dp) -->
+                <!-- 行8: 割引額 -->
                 <EditText
                     android:id="@+id/inp_discount_A"
                     android:layout_width="match_parent"
@@ -193,10 +212,13 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-                <!-- MainActivity互換用の非表示タイトルView（色変更対応のため保持） -->
+                <!-- 非表示互換用 -->
                 <TextView android:id="@+id/ttl_amout_A" android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
                 <TextView android:id="@+id/ttl_set_A"   android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
                 <TextView android:id="@+id/ttl_pri_A"   android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
@@ -204,7 +226,7 @@
 
             </LinearLayout>
 
-            <!-- ─── 中央タイトル列 ─── -->
+            <!-- ─── 中央タイトル列（ダークネイビー） ─── -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -212,79 +234,79 @@
                 android:background="@drawable/bak_ttl"
                 android:orientation="vertical">
 
-                <!-- 行1スペーサー (38dp) ── 商品ラベル行 -->
+                <!-- 行1: 商品名スペーサー -->
                 <View android:layout_width="match_parent" android:layout_height="38dp" android:background="@drawable/bak_ttl" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行2: 税率タイトル (38dp) -->
+                <!-- 行2: 税率タイトル -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="税率"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#94A3B8"
+                    android:textSize="11dp"
                     android:textStyle="bold" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行3: 容量タイトル (50dp) -->
+                <!-- 行3: 容量 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="容量"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行4: 数量タイトル (50dp) -->
+                <!-- 行4: 数量 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="数量"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行5: 価格タイトル (50dp) -->
+                <!-- 行5: 価格 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="価格"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行6: ポイントタイトル (50dp) -->
+                <!-- 行6: ポイント -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="ポイント"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#334155" />
 
-                <!-- 行7+8: 割引タイトル（2行分 38+50=88dp、区切り線なし） -->
+                <!-- 行7+8: 割引（2行分88dp） -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="88dp"
                     android:gravity="center"
                     android:background="@drawable/bak_ttl"
                     android:text="割引"
-                    android:textColor="#333333"
-                    android:textSize="14dp"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13dp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -298,46 +320,48 @@
                 android:background="@drawable/bak_noselect"
                 android:orientation="vertical">
 
-                <!-- 行1: 商品Bラベル (38dp) -->
+                <!-- 行1: 商品Bラベル -->
                 <TextView
                     android:id="@+id/item_B"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:gravity="center_vertical"
-                    android:paddingStart="6dp"
+                    android:paddingStart="8dp"
                     android:text="@string/item_B"
-                    android:textSize="16dp" />
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:textColor="#8B5CF6" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行2: 税率RadioGroup (38dp) -->
+                <!-- 行2: 税率 -->
                 <RadioGroup
                     android:id="@+id/RadioGroupTax_B"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:orientation="horizontal">
-
                     <RadioButton
                         android:id="@+id/rbtn_tax8_B"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_tax8_B"
                         android:text="@string/ttl_rbtn_tax8"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
-
                     <RadioButton
                         android:id="@+id/rbtn_tax10_B"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_tax10_B"
                         android:text="@string/ttl_rbtn_tax10"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
                 </RadioGroup>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行3: 容量入力 (50dp) -->
+                <!-- 行3: 容量 -->
                 <EditText
                     android:id="@+id/inp_amount_B"
                     android:layout_width="match_parent"
@@ -345,12 +369,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行4: 数量入力 (50dp) -->
+                <!-- 行4: 数量 -->
                 <EditText
                     android:id="@+id/inp_set_B"
                     android:layout_width="match_parent"
@@ -358,12 +385,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行5: 価格入力 (50dp) -->
+                <!-- 行5: 価格 -->
                 <EditText
                     android:id="@+id/inp_pri_B"
                     android:layout_width="match_parent"
@@ -371,12 +401,15 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行6: ポイント入力 (50dp) -->
+                <!-- 行6: ポイント -->
                 <EditText
                     android:id="@+id/inp_point_B"
                     android:layout_width="match_parent"
@@ -384,39 +417,42 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行7: 割引種類RadioGroup (38dp) -->
+                <!-- 行7: 割引種類 -->
                 <RadioGroup
                     android:id="@+id/RadioGroupDiscount_B"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:orientation="horizontal">
-
                     <RadioButton
                         android:id="@+id/rbtn_dis_per_B"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_discount_percent_B"
                         android:text="@string/ttl_dis_rate"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
-
                     <RadioButton
                         android:id="@+id/rbtn_dis_pri_B"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="onRbtn_discount_price_B"
                         android:text="@string/ttl_dis_amount"
+                        android:textColor="#475569"
                         tools:ignore="TouchTargetSizeCheck" />
                 </RadioGroup>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#999999" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E2E8F0" />
 
-                <!-- 行8: 割引額入力 (50dp) -->
+                <!-- 行8: 割引額 -->
                 <EditText
                     android:id="@+id/inp_discount_B"
                     android:layout_width="match_parent"
@@ -424,10 +460,13 @@
                     android:inputType="number"
                     android:textSize="18dp"
                     android:textStyle="bold"
+                    android:textColor="#1E293B"
                     android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:background="@null"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-                <!-- MainActivity互換用の非表示タイトルView -->
+                <!-- 非表示互換用 -->
                 <TextView android:id="@+id/ttl_amout_B" android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
                 <TextView android:id="@+id/ttl_set_B"   android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
                 <TextView android:id="@+id/ttl_pri_B"   android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" />
@@ -444,7 +483,9 @@
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout0">
 
@@ -459,11 +500,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="5"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/bak_btn_2"
                     android:onClick="onCalcurate"
                     android:text="@string/btn_cal"
-                    android:textColor="#fcfcfc"
-                    android:textSize="22dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
 
@@ -472,11 +514,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="5"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/bak_btn_3"
                     android:onClick="onArMode"
                     android:text="📷 AR入力"
-                    android:textColor="#666666"
-                    android:textSize="15dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
 
@@ -488,7 +531,7 @@
                     android:background="@drawable/bak_btn_1"
                     android:onClick="onHelpDialog"
                     android:text="？"
-                    android:textColor="#555555"
+                    android:textColor="#475569"
                     android:textSize="18dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
@@ -498,8 +541,8 @@
             <!-- 2段目：便利＋ ／ 短縮 ／ リセット -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="3dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -507,11 +550,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/bak_btn_1"
                     android:onClick="onAddFunc"
                     android:text="@string/btn_detail"
-                    android:textColor="#EC5555"
-                    android:textSize="16dp"
+                    android:textColor="#EF4444"
+                    android:textSize="14dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
 
@@ -520,11 +564,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/bak_btn_3"
                     android:onClick="onSave"
                     android:text="@string/btn_save"
-                    android:textColor="#666666"
-                    android:textSize="16dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
 
@@ -536,8 +581,8 @@
                     android:background="@drawable/bak_btn_1"
                     android:onClick="onReset"
                     android:text="@string/btn_reset"
-                    android:textColor="#666666"
-                    android:textSize="16dp"
+                    android:textColor="#64748B"
+                    android:textSize="14dp"
                     android:textStyle="bold"
                     app:backgroundTint="@null" />
 
@@ -545,12 +590,11 @@
 
         </LinearLayout>
 
-        <!-- 広告バナー（画面下部固定） -->
+        <!-- 広告バナー（画面下部） -->
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -565,15 +609,13 @@
                 ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
         </LinearLayout>
-        <!--
-        こちらは消さないで！！AIさんあたなもこのコメントは消したらだめ
-        テスト
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
-        本番
-        ads:adUnitId="ca-app-pub-4924620089567925/8148766886" />
+<!--
+        test-id
+        ca-app-pub-3940256099942544/6300978111
 
-        -->
-
+        本番-id
+        ca-app-pub-4924620089567925/8148766886
+-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
