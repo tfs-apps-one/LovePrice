@@ -149,17 +149,17 @@ public class MainActivity extends AppCompatActivity {
 //test_make
     //リワード動画
     // 本番ID 動画
-//    private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
+    private String AD_UNIT_ID = "ca-app-pub-4924620089567925/2621100342";
     //テストID バナー
-    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+//    private String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
 
 //test_make
     //インタースティシャル広告
     private InterstitialAd mInterstitialAd;
     //本番ID
-//    private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
+    private static final String AD_INTER_UNIT_ID = "ca-app-pub-4924620089567925/5469468039"; // 実際のIDに変更
     //テストID
-    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+//    private static final String AD_INTER_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
 
     //自動計算
 //test_make
