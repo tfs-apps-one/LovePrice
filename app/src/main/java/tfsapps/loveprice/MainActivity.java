@@ -2100,11 +2100,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREF_NAME        = "love_price_prefs";
     private static final String PREF_AR_COUNT    = "ar_use_count";
-    private static final int    AR_FREE_LIMIT    = 5;   // 無料使用回数
+    private static final int    AR_FREE_LIMIT    = 8;   // この回数ごとにインタースティシャル広告を表示
 
     /**
      * 「📷AR入力」ボタンタップ。
-     * 5回使用ごとにリワード広告を視聴しないと使えない。
+     * 8回使用ごとにインタースティシャル広告を表示する（ブロックはしない）。
+     * 広告がある場合は広告→AR起動、ない場合はそのままAR起動。
      */
     public void onArMode(View view) {
         /* ソフトキーボードを隠す */
@@ -2114,42 +2115,34 @@ public class MainActivity extends AppCompatActivity {
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        int count = prefs.getInt(PREF_AR_COUNT, 0);
+        int count = prefs.getInt(PREF_AR_COUNT, 0) + 1;
+        prefs.edit().putInt(PREF_AR_COUNT, count).apply();
 
-        if (count >= AR_FREE_LIMIT) {
-            // 5回使用済み → リワード広告を要求
-            showArRewardDialog(view);
+        if (count >= AR_FREE_LIMIT && mInterstitialAd != null) {
+            // 8回目: インタースティシャル広告を表示し、閉じたらAR起動
+            prefs.edit().putInt(PREF_AR_COUNT, 0).apply(); // カウントリセット
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    // 広告を閉じたらAR起動
+                    mInterstitialAd = null;
+                    loadInterstitialAd();
+                    launchArCamera();
+                }
+                @Override
+                public void onAdFailedToShowFullScreenContent(
+                        com.google.android.gms.ads.AdError adError) {
+                    // 広告表示失敗時もAR起動（ユーザーをブロックしない）
+                    mInterstitialAd = null;
+                    loadInterstitialAd();
+                    launchArCamera();
+                }
+            });
+            mInterstitialAd.show(this);
         } else {
-            // まだ無料枠あり → カウントアップして起動
-            prefs.edit().putInt(PREF_AR_COUNT, count + 1).apply();
+            // 通常: そのままAR起動
             launchArCamera();
         }
-    }
-
-    /** リワード広告視聴をお願いするダイアログ */
-    private void showArRewardDialog(final View triggerView) {
-        new AlertDialog.Builder(this)
-                .setTitle("📷 AR入力について")
-                .setMessage("AR入力は" + AR_FREE_LIMIT + "回ごとに短い動画広告をご覧いただく必要があります。\n\n"
-                        + "動画を見てAR入力を続けますか？")
-                .setPositiveButton("動画を見る", (dialog, which) -> {
-                    if (rewardedAd != null) {
-                        rewardedAd.show(MainActivity.this, rewardItem -> {
-                            // 報酬取得 → カウントリセット＆AR起動
-                            getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                                    .edit().putInt(PREF_AR_COUNT, 1).apply();
-                            loadRewardedAd(); // 次回用にプリロード
-                            launchArCamera();
-                        });
-                    } else {
-                        // 広告未準備の場合はそのまま使わせる
-                        Toast.makeText(this, "広告を読み込み中です。しばらく後に再度お試しください",
-                                Toast.LENGTH_SHORT).show();
-                        loadRewardedAd();
-                    }
-                })
-                .setNegativeButton("キャンセル", null)
-                .show();
     }
 
     /** ArCameraActivity を実際に起動する共通処理 */
