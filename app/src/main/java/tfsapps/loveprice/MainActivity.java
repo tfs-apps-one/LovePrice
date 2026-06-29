@@ -2100,7 +2100,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREF_NAME        = "love_price_prefs";
     private static final String PREF_AR_COUNT    = "ar_use_count";
-    private static final int    AR_FREE_LIMIT    = 8;   // この回数ごとにインタースティシャル広告を表示
+    private static final int    AR_FREE_LIMIT    = 9;   // この回数ごとにインタースティシャル広告を表示
 
     /**
      * 「📷AR入力」ボタンタップ。
@@ -2212,18 +2212,22 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "AR Result: A(" + priceA + "," + volumeA
                 + ") B(" + priceB + "," + volumeB + ")");
 
-        // 取得できた値だけをセット（-1 = 未取得は空欄のまま）
+        // 取得できた値だけをセット（-1 = スキップ・未取得は既存の手入力値を保持）
         if (priceA  > 0) inp_pri_A.setText(String.valueOf(priceA));
         if (volumeA > 0) inp_amount_A.setText(String.valueOf(volumeA));
         if (priceB  > 0) inp_pri_B.setText(String.valueOf(priceB));
         if (volumeB > 0) inp_amount_B.setText(String.valueOf(volumeB));
 
-        // 両商品の金額が揃っていれば自動計算
-        if (priceA > 0 && priceB > 0) {
+        // AR結果ではなくEditTextの現在値で計算可否を判断する
+        // スキップした側は手入力済みの値がそのまま残っているため正しく計算できる
+        boolean hasPriA = !inp_pri_A.getText().toString().isEmpty();
+        boolean hasPriB = !inp_pri_B.getText().toString().isEmpty();
+
+        if (hasPriA && hasPriB) {
             PriceCalcurate();
             Toast.makeText(this, "AR入力完了！自動計算しました", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "AR入力完了。未取得の項目を手動入力してください",
+            Toast.makeText(this, "AR入力完了。未入力の項目を手動で入力してください",
                     Toast.LENGTH_LONG).show();
         }
     }

@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
@@ -84,7 +87,7 @@ public class ArCameraActivity extends AppCompatActivity
      * STEP A確定後、スキャンを一時停止する時間(ms)。
      * この間 onDetected は無視され、オーバーレイが表示される。
      */
-    private static final long SCAN_PAUSE_MS = 1500L;
+    private static final long SCAN_PAUSE_MS = 1000L;
 
     // ── Views ─────────────────────────────────────────────────────────────────
     private PreviewView  mPreviewView;
@@ -96,7 +99,9 @@ public class ArCameraActivity extends AppCompatActivity
     private Button       mCloseBtn;
     private Button       mNextBtn;
     private Button       mRescanBtn;
+    private Button       mSkipBtn;
     private android.view.View mReadyOverlay;
+    private AdView            mAdView;
 
     // ── CameraX ───────────────────────────────────────────────────────────────
     private ExecutorService  mCameraExecutor;
@@ -142,7 +147,12 @@ public class ArCameraActivity extends AppCompatActivity
         mCloseBtn     = findViewById(R.id.ar_close_btn);
         mNextBtn      = findViewById(R.id.ar_next_btn);
         mRescanBtn    = findViewById(R.id.ar_rescan_btn);
+        mSkipBtn      = findViewById(R.id.ar_skip_btn);
         mReadyOverlay = findViewById(R.id.ar_ready_overlay);
+
+        // バナー広告ロード
+        mAdView = findViewById(R.id.ar_adView);
+        mAdView.loadAd(new AdRequest.Builder().build());
 
         mCameraExecutor = Executors.newSingleThreadExecutor();
 
@@ -156,6 +166,33 @@ public class ArCameraActivity extends AppCompatActivity
 
         // 再スキャンボタン：現ステップの確定値をリセットして再認識
         mRescanBtn.setOnClickListener(v -> rescanCurrentStep());
+
+        // スキップボタン：現ステップの値を未取得(-1)のまま次へ進む
+        mSkipBtn.setOnClickListener(v -> {
+            mHandler.removeCallbacks(mAdvanceRunnable);
+            if (mStep == STEP_A) {
+                // A をスキップ → A の結果を -1 にして STEP_B へ
+                mResultPriceA  = -1;
+                mResultVolumeA = -1;
+                mScanningPaused = true;
+                mNextBtn.setVisibility(android.view.View.GONE);
+                mRescanBtn.setVisibility(android.view.View.GONE);
+                mReadyOverlay.setVisibility(android.view.View.VISIBLE);
+                mHandler.postDelayed(() -> {
+                    if (mResultSent) return;
+                    mReadyOverlay.setVisibility(android.view.View.GONE);
+                    mStep = STEP_B;
+                    mScanningPaused = false;
+                    resetStepState();
+                    updateUI();
+                }, SCAN_PAUSE_MS);
+            } else {
+                // B をスキップ → B の結果を -1 にして終了
+                mResultPriceB  = -1;
+                mResultVolumeB = -1;
+                finishWithResult();
+            }
+        });
 
         updateUI();
 
@@ -415,10 +452,12 @@ public class ArCameraActivity extends AppCompatActivity
             mStepLabel.setText("STEP 1 / 2  商品A");
             mNavText.setText("商品Aの値札・ラベルを写してください");
             mNextBtn.setText("商品A 確定 ▶");
+            mSkipBtn.setText("Aをスキップ ▶ B商品へ");
         } else {
             mStepLabel.setText("STEP 2 / 2  商品B");
             mNavText.setText("次に、商品Bを写してください");
             mNextBtn.setText("商品B 確定 ✓");
+            mSkipBtn.setText("Bをスキップ ✓ 完了");
         }
         updateStatusText();
     }

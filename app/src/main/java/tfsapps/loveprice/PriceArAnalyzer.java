@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
  *
  * 金額抽出ルール:
  *   - 数字の後に「円」「¥」が続く (例: 198円, ¥298)
+ *   - 「税抜」「税別」「本体価格」が数字と「円」の間に挟まる場合 (例: 898 税抜円)
  *   - 同一行に「税込」「本体価格」「税抜」を含む場合の数字
  *
  * 容量抽出ルール:
@@ -57,9 +58,12 @@ public class PriceArAnalyzer implements ImageAnalysis.Analyzer {
 
     // ── 正規表現パターン ──────────────────────────────────────────────────────
 
-    /** 金額: 数字 + 円 (例: 198円, 1,280円) */
+    /**
+     * 金額: 数字 + (税抜|税別|本体価格)? + 円
+     * 例: 198円, 1,280円, 898 税抜円, 1,480税別円
+     */
     private static final Pattern PRICE_SUFFIX_YEN =
-            Pattern.compile("([1-9][\\d,]{0,6})\\s*円");
+            Pattern.compile("([1-9][\\d,]{0,6})\\s*(?:税抜|税別|本体価格)?\\s*円");
 
     /** 金額: ¥/￥ + 数字 (例: ¥198, ￥1280) */
     private static final Pattern PRICE_PREFIX_YEN =
@@ -78,6 +82,13 @@ public class PriceArAnalyzer implements ImageAnalysis.Analyzer {
     /** 金額認識ライン判定: 税関連キーワード */
     private static final Pattern TAX_KEYWORDS =
             Pattern.compile("税込|税抜|本体価格|税別|消費税");
+
+    /**
+     * 日付パターン: このパターンを含む行は金額抽出をスキップする。
+     * 例: 「6月30日」の「30」を価格として誤認識するのを防ぐ。
+     */
+    private static final Pattern DATE_PATTERN =
+            Pattern.compile("\\d+月\\d+日");
 
     // ── コールバック ──────────────────────────────────────────────────────────
 
@@ -153,13 +164,25 @@ public class PriceArAnalyzer implements ImageAnalysis.Analyzer {
         List<DetectedBox> boxes = new ArrayList<>();
 
         for (Text.TextBlock block : visionText.getTextBlocks()) {
+
+            // ── ブロック全体テキストでも検索 ────────────────────────────
+            // 大きな値段数字と「円」が別Lineに分かれて認識されるケースに対応
+            StringBuilder blockBuilder = new StringBuilder();
+            for (Text.Line line : block.getLines()) {
+                blockBuilder.append(line.getText()).append(" ");
+            }
+            String blockText = blockBuilder.toString().trim();
+            Integer blockPrice = extractPrice(blockText);
+            if (blockPrice != null && (bestPrice == null || blockPrice > bestPrice)) {
+                bestPrice = blockPrice;
+            }
+
             for (Text.Line line : block.getLines()) {
                 String lineText = line.getText();
 
                 // ── 金額判定 ──────────────────────────────────────────────
                 Integer linePrice = extractPrice(lineText);
                 if (linePrice != null) {
-                    // より大きい数値（金額として妥当な範囲）を優先
                     if (bestPrice == null || linePrice > bestPrice) {
                         bestPrice = linePrice;
                     }
@@ -193,7 +216,10 @@ public class PriceArAnalyzer implements ImageAnalysis.Analyzer {
      * 優先順位: ①「円」サフィックス ②「¥/￥」プレフィックス ③税関連キーワード行
      */
     static Integer extractPrice(@NonNull String text) {
-        // ① 数字 + 円
+        // 日付パターン（例: 6月30日）を含む行は除外（日付の数字を価格と誤認識するのを防ぐ）
+        if (DATE_PATTERN.matcher(text).find()) return null;
+
+        // ① 数字 + (税抜|税別)? + 円
         Matcher m = PRICE_SUFFIX_YEN.matcher(text);
         Integer candidate = null;
         while (m.find()) {
@@ -248,9 +274,9 @@ public class PriceArAnalyzer implements ImageAnalysis.Analyzer {
         return candidate;
     }
 
-    /** 金額として妥当な範囲: 1〜999999円 */
+    /** 金額として妥当な範囲: 100〜999999円（100円未満は日付・数量の誤認識を除外） */
     private static boolean isPriceRange(int val) {
-        return val >= 1 && val <= 999999;
+        return val >= 100 && val <= 999999;
     }
 
     /** 容量として妥当な範囲: 1〜99999 */
