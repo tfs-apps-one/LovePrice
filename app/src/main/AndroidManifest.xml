@@ -16,7 +16,6 @@
         android:roundIcon="@drawable/bc_512x512"
         android:supportsRtl="true"
         android:theme="@style/Theme.LovePrice"
-        android:extractNativeLibs="false"
         tools:targetApi="31">
 
         <meta-data
